@@ -27,6 +27,20 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="@string/pref_category_diagnostics">
+
+        <Preference
+            app:key="test_network"
+            app:title="@string/pref_test_network"
+            app:summary="@string/pref_test_network_summary" />
+
+        <Preference
+            app:key="print_test_page"
+            app:title="@string/pref_print_test_page"
+            app:summary="@string/pref_print_test_page_summary" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory app:title="@string/pref_category_instructions">
 
         <Preference
