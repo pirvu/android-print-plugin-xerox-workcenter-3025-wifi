@@ -18,13 +18,6 @@
             app:defaultValue="192.168.0.109"
             app:useSimpleSummaryProvider="true" />
 
-        <EditTextPreference
-            app:key="printer_port"
-            app:title="@string/pref_printer_port"
-            app:summary="@string/pref_printer_port_summary"
-            app:defaultValue="9100"
-            app:useSimpleSummaryProvider="true" />
-
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/pref_category_diagnostics">
@@ -38,6 +31,16 @@
             app:key="print_test_page"
             app:title="@string/pref_print_test_page"
             app:summary="@string/pref_print_test_page_summary" />
+
+        <Preference
+            app:key="job_history"
+            app:title="@string/pref_job_history"
+            app:summary="@string/pref_job_history_summary" />
+
+        <Preference
+            app:key="view_logs"
+            app:title="@string/pref_view_logs"
+            app:summary="@string/pref_view_logs_summary" />
 
     </PreferenceCategory>
 

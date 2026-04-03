@@ -8,16 +8,20 @@
     <string name="pref_printer_name_summary">Name shown in Android print dialog</string>
     <string name="pref_printer_ip">Printer IP Address</string>
     <string name="pref_printer_ip_summary">Find this on your printer\'s config page</string>
-    <string name="pref_printer_port">Port</string>
-    <string name="pref_printer_port_summary">Default: 9100 (Raw TCP/IP)</string>
 
     <string name="pref_category_diagnostics">Test &amp; Diagnostics</string>
     <string name="pref_test_network">Test Network Connection</string>
     <string name="pref_test_network_summary">Check if the printer is reachable</string>
     <string name="pref_print_test_page">Print Test Page</string>
     <string name="pref_print_test_page_summary">Send a test page to the printer</string>
+    <string name="pref_job_history">Print Job History</string>
+    <string name="pref_job_history_summary">View recent print jobs</string>
+    <string name="pref_view_logs">View Debug Logs</string>
+    <string name="pref_view_logs_summary">View print service diagnostic logs</string>
 
     <string name="pref_category_instructions">How to use</string>
     <string name="pref_info_title">Setup Instructions</string>
     <string name="pref_info_summary">1. Set the printer IP above\n2. Go to Android Settings → Connected devices → Printing\n3. Enable \"Xerox 3025 Print Plugin\"\n4. Print any document and select \"Xerox WorkCentre 3025\"</string>
+
+    <string name="no_print_history">No print jobs yet</string>
 </resources>

@@ -1,11 +1,23 @@
 package com.xerox3025.printplugin;
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.method.ScrollingMovementMethod;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -14,12 +26,13 @@ import androidx.preference.PreferenceManager;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
 public class SettingsActivity extends AppCompatActivity {
+
+    private static final int NOTIF_PERMISSION_REQUEST = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,12 +50,21 @@ public class SettingsActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(R.string.app_name);
             getSupportActionBar().setSubtitle(R.string.settings_subtitle);
         }
+
+        // Request notification permission on API 33+
+        if (Build.VERSION.SDK_INT >= 33) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        NOTIF_PERMISSION_REQUEST);
+            }
+        }
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
 
         private static final int CONNECT_TIMEOUT_MS = 5000;
-        private static final int RAW_PORT = 9100;
         private static final int IPP_PORT = 631;
 
         @Override
@@ -54,12 +76,6 @@ public class SettingsActivity extends AppCompatActivity {
                 ipPref.setOnBindEditTextListener(editText ->
                         editText.setInputType(InputType.TYPE_CLASS_TEXT
                                 | InputType.TYPE_TEXT_VARIATION_URI));
-            }
-
-            EditTextPreference portPref = findPreference("printer_port");
-            if (portPref != null) {
-                portPref.setOnBindEditTextListener(editText ->
-                        editText.setInputType(InputType.TYPE_CLASS_NUMBER));
             }
 
             Preference testNetwork = findPreference("test_network");
@@ -77,6 +93,22 @@ public class SettingsActivity extends AppCompatActivity {
                     return true;
                 });
             }
+
+            Preference jobHistory = findPreference("job_history");
+            if (jobHistory != null) {
+                jobHistory.setOnPreferenceClickListener(pref -> {
+                    startActivity(new Intent(requireContext(), JobHistoryActivity.class));
+                    return true;
+                });
+            }
+
+            Preference viewLogs = findPreference("view_logs");
+            if (viewLogs != null) {
+                viewLogs.setOnPreferenceClickListener(pref -> {
+                    showLogViewer();
+                    return true;
+                });
+            }
         }
 
         private String getPrinterIp() {
@@ -84,22 +116,12 @@ public class SettingsActivity extends AppCompatActivity {
             return prefs.getString("printer_ip", "192.168.0.109");
         }
 
-        private int getPrinterPort() {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
-            try {
-                return Integer.parseInt(prefs.getString("printer_port", String.valueOf(RAW_PORT)).trim());
-            } catch (NumberFormatException e) {
-                return RAW_PORT;
-            }
-        }
-
         private void runNetworkTest() {
             String ip = getPrinterIp();
-            int port = getPrinterPort();
 
             AlertDialog dialog = new AlertDialog.Builder(requireContext())
                     .setTitle("Network Test")
-                    .setMessage("Testing connection to " + ip + ":" + port + "...")
+                    .setMessage("Testing connection to " + ip + "...")
                     .setCancelable(false)
                     .create();
             dialog.show();
@@ -108,7 +130,7 @@ public class SettingsActivity extends AppCompatActivity {
                 StringBuilder result = new StringBuilder();
                 boolean success = true;
 
-                result.append("Target: ").append(ip).append(":").append(port).append("\n\n");
+                result.append("Target: ").append(ip).append("\n\n");
                 try {
                     long start = System.currentTimeMillis();
                     InetAddress addr = InetAddress.getByName(ip);
@@ -129,7 +151,7 @@ public class SettingsActivity extends AppCompatActivity {
                             result.append("[OK] Ping: reachable (").append(elapsed).append(" ms)\n");
                         } else {
                             result.append("[WARN] Ping: no ICMP reply (").append(elapsed)
-                                    .append(" ms) — may still work\n");
+                                    .append(" ms)\n");
                         }
                     } catch (Exception e) {
                         result.append("[WARN] Ping failed: ").append(e.getMessage()).append("\n");
@@ -140,20 +162,16 @@ public class SettingsActivity extends AppCompatActivity {
                     Socket socket = new Socket();
                     try {
                         long start = System.currentTimeMillis();
-                        socket.connect(new InetSocketAddress(ip, port), CONNECT_TIMEOUT_MS);
+                        socket.connect(new InetSocketAddress(ip, 9100), CONNECT_TIMEOUT_MS);
                         long elapsed = System.currentTimeMillis() - start;
-                        result.append("[OK] TCP port ").append(port)
-                                .append(" open (").append(elapsed).append(" ms)\n");
+                        result.append("[OK] Port 9100 open (").append(elapsed).append(" ms)\n");
                     } catch (IOException e) {
-                        result.append("[FAIL] TCP port ").append(port)
-                                .append(" unreachable: ").append(e.getMessage()).append("\n");
-                        success = false;
+                        result.append("[WARN] Port 9100 closed\n");
                     } finally {
                         try { socket.close(); } catch (IOException ignored) {}
                     }
                 }
 
-                // Also test IPP port
                 if (success) {
                     Socket socket = new Socket();
                     try {
@@ -163,8 +181,9 @@ public class SettingsActivity extends AppCompatActivity {
                         result.append("[OK] IPP port ").append(IPP_PORT)
                                 .append(" open (").append(elapsed).append(" ms)\n");
                     } catch (IOException e) {
-                        result.append("[WARN] IPP port ").append(IPP_PORT)
+                        result.append("[FAIL] IPP port ").append(IPP_PORT)
                                 .append(" closed: ").append(e.getMessage()).append("\n");
+                        success = false;
                     } finally {
                         try { socket.close(); } catch (IOException ignored) {}
                     }
@@ -174,7 +193,7 @@ public class SettingsActivity extends AppCompatActivity {
                 if (success) {
                     result.append("Printer is reachable and ready.");
                 } else {
-                    result.append("Could not reach printer. Check IP, port, and that the printer is powered on and connected to WiFi.");
+                    result.append("Could not reach printer. Check IP and that the printer is on.");
                 }
 
                 String finalMessage = result.toString();
@@ -192,7 +211,7 @@ public class SettingsActivity extends AppCompatActivity {
 
             AlertDialog dialog = new AlertDialog.Builder(requireContext())
                     .setTitle("Print Test Page")
-                    .setMessage("Sending test page via IPP to " + ip + "...")
+                    .setMessage("Sending test page to " + ip + "...")
                     .setCancelable(false)
                     .create();
             dialog.show();
@@ -200,47 +219,18 @@ public class SettingsActivity extends AppCompatActivity {
             new Thread(() -> {
                 String resultMessage;
                 try {
-                    // Load pre-rendered URF test page from assets
                     byte[] urfData = loadAsset("test_page.urf");
+                    IppClient.IppResult result = IppClient.sendPrintJob(ip, urfData, "Test Page");
 
-                    // Build IPP Print-Job request
-                    byte[] ippRequest = buildIppPrintJob(ip, urfData);
-
-                    // Send via HTTP POST to IPP port
-                    Socket socket = new Socket();
-                    socket.connect(new InetSocketAddress(ip, IPP_PORT), CONNECT_TIMEOUT_MS);
-                    socket.setSoTimeout(30000);
-
-                    String httpHeader = "POST /ipp/print HTTP/1.1\r\n"
-                            + "Host: " + ip + "\r\n"
-                            + "Content-Type: application/ipp\r\n"
-                            + "Content-Length: " + ippRequest.length + "\r\n"
-                            + "\r\n";
-
-                    OutputStream out = socket.getOutputStream();
-                    out.write(httpHeader.getBytes());
-                    out.write(ippRequest);
-                    out.flush();
-
-                    // Read response
-                    InputStream in = socket.getInputStream();
-                    byte[] resp = new byte[4096];
-                    int read = in.read(resp);
-                    socket.close();
-
-                    // Check for HTTP 200
-                    String response = new String(resp, 0, Math.min(read, 100));
-                    if (response.contains("200")) {
+                    if (result.success) {
                         resultMessage = "Test page sent successfully!\n\n"
                                 + urfData.length + " bytes sent via IPP to " + ip + "\n\n"
                                 + "The printer should produce a page shortly.";
                     } else {
-                        resultMessage = "IPP request failed:\n" + response;
+                        resultMessage = "IPP request failed:\n" + result.message;
                     }
                 } catch (IOException e) {
-                    resultMessage = "Failed to send test page:\n\n"
-                            + e.getMessage() + "\n\n"
-                            + "Check that the printer is on and reachable.";
+                    resultMessage = "Failed to send test page:\n\n" + e.getMessage();
                 }
 
                 String finalMessage = resultMessage;
@@ -253,6 +243,36 @@ public class SettingsActivity extends AppCompatActivity {
             }).start();
         }
 
+        private void showLogViewer() {
+            String logs = PrintLog.exportAsText();
+            if (logs.isEmpty()) logs = "(no log entries)";
+
+            TextView textView = new TextView(requireContext());
+            textView.setText(logs);
+            textView.setTextSize(11);
+            textView.setPadding(32, 16, 32, 16);
+            textView.setTypeface(android.graphics.Typeface.MONOSPACE);
+            textView.setMovementMethod(new ScrollingMovementMethod());
+            textView.setVerticalScrollBarEnabled(true);
+
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Debug Logs")
+                    .setView(textView)
+                    .setPositiveButton("Close", null)
+                    .setNeutralButton("Copy", (d, w) -> {
+                        ClipboardManager cm = (ClipboardManager) requireContext()
+                                .getSystemService(Context.CLIPBOARD_SERVICE);
+                        cm.setPrimaryClip(ClipData.newPlainText("Print Logs",
+                                PrintLog.exportAsText()));
+                        Toast.makeText(requireContext(), "Logs copied", Toast.LENGTH_SHORT).show();
+                    })
+                    .setNegativeButton("Clear", (d, w) -> {
+                        PrintLog.clear();
+                        Toast.makeText(requireContext(), "Logs cleared", Toast.LENGTH_SHORT).show();
+                    })
+                    .show();
+        }
+
         private byte[] loadAsset(String filename) throws IOException {
             InputStream is = requireContext().getAssets().open(filename);
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -263,65 +283,6 @@ public class SettingsActivity extends AppCompatActivity {
             }
             is.close();
             return buffer.toByteArray();
-        }
-
-        private byte[] buildIppPrintJob(String printerIp, byte[] documentData) {
-            ByteArrayOutputStream req = new ByteArrayOutputStream();
-            try {
-                // IPP version 1.1
-                req.write(new byte[]{0x01, 0x01});
-                // Operation: Print-Job (0x0002)
-                req.write(new byte[]{0x00, 0x02});
-                // Request ID
-                req.write(intToBytes(1));
-
-                // Operation attributes tag
-                req.write(0x01);
-                // attributes-charset = utf-8
-                writeIppString(req, (byte) 0x47, "attributes-charset", "utf-8");
-                // attributes-natural-language = en
-                writeIppString(req, (byte) 0x48, "attributes-natural-language", "en");
-                // printer-uri
-                writeIppString(req, (byte) 0x45, "printer-uri",
-                        "ipp://" + printerIp + "/ipp/print");
-                // requesting-user-name
-                writeIppString(req, (byte) 0x42, "requesting-user-name", "android-plugin");
-                // job-name
-                writeIppString(req, (byte) 0x42, "job-name", "Test Page");
-                // document-format = image/urf
-                writeIppString(req, (byte) 0x49, "document-format", "image/urf");
-
-                // End of attributes
-                req.write(0x03);
-
-                // Document data
-                req.write(documentData);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            return req.toByteArray();
-        }
-
-        private void writeIppString(ByteArrayOutputStream out, byte tag,
-                                     String name, String value) throws IOException {
-            out.write(tag);
-            byte[] nameBytes = name.getBytes();
-            out.write(shortToBytes(nameBytes.length));
-            out.write(nameBytes);
-            byte[] valueBytes = value.getBytes();
-            out.write(shortToBytes(valueBytes.length));
-            out.write(valueBytes);
-        }
-
-        private byte[] intToBytes(int value) {
-            return new byte[]{
-                    (byte) (value >> 24), (byte) (value >> 16),
-                    (byte) (value >> 8), (byte) value
-            };
-        }
-
-        private byte[] shortToBytes(int value) {
-            return new byte[]{(byte) (value >> 8), (byte) value};
         }
     }
 }

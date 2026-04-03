@@ -1,7 +1,10 @@
 package com.xerox3025.printplugin;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.SharedPreferences;
-import android.os.CancellationSignal;
+import android.graphics.Bitmap;
+import android.graphics.pdf.PdfRenderer;
 import android.os.ParcelFileDescriptor;
 import android.print.PrintAttributes;
 import android.print.PrinterCapabilitiesInfo;
@@ -11,24 +14,32 @@ import android.printservice.PrintDocument;
 import android.printservice.PrintJob;
 import android.printservice.PrintService;
 import android.printservice.PrinterDiscoverySession;
-import android.util.Log;
 
+import androidx.core.app.NotificationCompat;
 import androidx.preference.PreferenceManager;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Xerox3025PrintService extends PrintService {
 
     private static final String TAG = "Xerox3025Print";
-    private static final int RAW_PORT = 9100;
-    private static final int CONNECT_TIMEOUT_MS = 5000;
-    private static final int SOCKET_TIMEOUT_MS = 30000;
+    private static final String CHANNEL_ID = "print_jobs";
+    private volatile boolean cancelled = false;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        NotificationChannel channel = new NotificationChannel(
+                CHANNEL_ID, "Print Jobs", NotificationManager.IMPORTANCE_LOW);
+        channel.setDescription("Print job status notifications");
+        getSystemService(NotificationManager.class).createNotificationChannel(channel);
+    }
 
     @Override
     protected PrinterDiscoverySession onCreatePrinterDiscoverySession() {
@@ -37,76 +48,176 @@ public class Xerox3025PrintService extends PrintService {
 
     @Override
     protected void onRequestCancelPrintJob(PrintJob printJob) {
+        cancelled = true;
         printJob.cancel();
     }
 
     @Override
     protected void onPrintJobQueued(PrintJob printJob) {
+        cancelled = false;
         new Thread(() -> processPrintJob(printJob)).start();
     }
 
     private void processPrintJob(PrintJob printJob) {
         printJob.start();
 
+        String jobName = printJob.getInfo().getLabel();
+        int notifId = printJob.getId().hashCode();
+
+        PrintLog.i(TAG, "Starting print job: " + jobName);
+
+        // Show ongoing notification
+        NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_printer)
+                .setContentTitle("Printing...")
+                .setContentText(jobName)
+                .setOngoing(true)
+                .setProgress(0, 0, true);
+        getSystemService(NotificationManager.class).notify(notifId, notifBuilder.build());
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String printerIp = prefs.getString("printer_ip", "192.168.0.109");
-        int printerPort = RAW_PORT;
-
-        try {
-            String portStr = prefs.getString("printer_port", String.valueOf(RAW_PORT));
-            printerPort = Integer.parseInt(portStr.trim());
-        } catch (NumberFormatException e) {
-            Log.w(TAG, "Invalid port, using default 9100");
-        }
-
-        Log.i(TAG, "Sending job to " + printerIp + ":" + printerPort);
 
         PrintDocument document = printJob.getDocument();
         ParcelFileDescriptor pfd = document.getData();
 
         if (pfd == null) {
-            Log.e(TAG, "No document data");
-            printJob.fail("No document data available");
+            PrintLog.e(TAG, "No document data");
+            failJob(printJob, notifId, jobName, "No document data available", 0);
             return;
         }
 
-        Socket socket = new Socket();
+        File tempFile = null;
         try {
-            socket.connect(new InetSocketAddress(printerIp, printerPort), CONNECT_TIMEOUT_MS);
-            socket.setSoTimeout(SOCKET_TIMEOUT_MS);
+            // Copy PFD to temp file (PdfRenderer needs seekable FD)
+            tempFile = File.createTempFile("print_", ".pdf", getCacheDir());
+            copyToFile(pfd, tempFile);
+            long pdfSize = tempFile.length();
+            PrintLog.i(TAG, "PDF copied to temp file: " + pdfSize + " bytes");
 
-            OutputStream out = socket.getOutputStream();
-            InputStream in = new ParcelFileDescriptor.AutoCloseInputStream(pfd);
+            // Open PDF and render pages to URF
+            ParcelFileDescriptor tempPfd = ParcelFileDescriptor.open(tempFile,
+                    ParcelFileDescriptor.MODE_READ_ONLY);
+            PdfRenderer renderer = new PdfRenderer(tempPfd);
+            int pageCount = renderer.getPageCount();
+            PrintLog.i(TAG, "PDF has " + pageCount + " page(s)");
 
-            byte[] buffer = new byte[8192];
-            int bytesRead;
-            long totalBytes = 0;
-
-            while ((bytesRead = in.read(buffer)) != -1) {
-                if (printJob.isCancelled()) {
-                    Log.i(TAG, "Job cancelled by user");
-                    printJob.cancel();
+            Bitmap[] pages = new Bitmap[pageCount];
+            for (int i = 0; i < pageCount; i++) {
+                if (cancelled) {
+                    PrintLog.i(TAG, "Job cancelled by user");
+                    renderer.close();
+                    tempPfd.close();
+                    cancelJob(printJob, notifId, jobName, pageCount);
                     return;
                 }
-                out.write(buffer, 0, bytesRead);
-                totalBytes += bytesRead;
+
+                long renderStart = System.currentTimeMillis();
+                PdfRenderer.Page page = renderer.openPage(i);
+
+                // Render at 600 DPI, matching printer's expected dimensions
+                Bitmap bmp = Bitmap.createBitmap(
+                        UrfEncoder.A4_WIDTH_600, UrfEncoder.A4_HEIGHT_600,
+                        Bitmap.Config.ARGB_8888);
+                // Fill white first (PDF may not fill background)
+                bmp.eraseColor(0xFFFFFFFF);
+                page.render(bmp, null, null, PdfRenderer.Page.RENDER_MODE_FOR_PRINT);
+                page.close();
+
+                pages[i] = bmp;
+                long renderTime = System.currentTimeMillis() - renderStart;
+                PrintLog.i(TAG, "Page " + (i + 1) + " rendered in " + renderTime + " ms");
+            }
+            renderer.close();
+            tempPfd.close();
+
+            // Encode as URF
+            long encodeStart = System.currentTimeMillis();
+            byte[] urfData = UrfEncoder.encode(pages);
+            long encodeTime = System.currentTimeMillis() - encodeStart;
+            PrintLog.i(TAG, "URF encoded: " + urfData.length + " bytes in " + encodeTime + " ms");
+
+            // Recycle bitmaps
+            for (Bitmap bmp : pages) {
+                if (bmp != null && !bmp.isRecycled()) bmp.recycle();
             }
 
-            out.flush();
-            Log.i(TAG, "Sent " + totalBytes + " bytes to printer");
+            if (cancelled) {
+                PrintLog.i(TAG, "Job cancelled by user");
+                cancelJob(printJob, notifId, jobName, pageCount);
+                return;
+            }
 
-            in.close();
-            printJob.complete();
+            // Send via IPP
+            IppClient.IppResult result = IppClient.sendPrintJob(printerIp, urfData, jobName);
+
+            if (result.success) {
+                PrintLog.i(TAG, "Print job completed: " + jobName);
+                printJob.complete();
+
+                // Update notification
+                notifBuilder.setContentTitle("Print complete")
+                        .setContentText(jobName + " — " + pageCount + " page(s)")
+                        .setOngoing(false)
+                        .setAutoCancel(true)
+                        .setProgress(0, 0, false);
+                getSystemService(NotificationManager.class).notify(notifId, notifBuilder.build());
+
+                // Record history
+                PrintJobHistory.addJob(this, new PrintJobHistory.JobRecord(
+                        jobName, System.currentTimeMillis(), "COMPLETED",
+                        urfData.length + " bytes, " + pageCount + " page(s)", pageCount));
+            } else {
+                failJob(printJob, notifId, jobName, result.message, pageCount);
+            }
 
         } catch (IOException e) {
-            Log.e(TAG, "Print failed: " + e.getMessage(), e);
-            printJob.fail("Could not connect to printer at " + printerIp + ":" + printerPort
-                    + " — " + e.getMessage());
+            PrintLog.e(TAG, "Print failed: " + e.getMessage(), e);
+            failJob(printJob, notifId, jobName,
+                    "Could not print to " + printerIp + " — " + e.getMessage(), 0);
+        } catch (OutOfMemoryError e) {
+            PrintLog.e(TAG, "Out of memory rendering PDF");
+            failJob(printJob, notifId, jobName,
+                    "Document too large to render at 600 DPI", 0);
         } finally {
-            try {
-                socket.close();
-            } catch (IOException ignored) {}
+            if (tempFile != null) tempFile.delete();
         }
+    }
+
+    private void failJob(PrintJob printJob, int notifId, String jobName,
+                          String reason, int pageCount) {
+        printJob.fail(reason);
+
+        NotificationCompat.Builder notif = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_printer)
+                .setContentTitle("Print failed")
+                .setContentText(reason)
+                .setOngoing(false)
+                .setAutoCancel(true);
+        getSystemService(NotificationManager.class).notify(notifId, notif.build());
+
+        PrintJobHistory.addJob(this, new PrintJobHistory.JobRecord(
+                jobName, System.currentTimeMillis(), "FAILED", reason, pageCount));
+    }
+
+    private void cancelJob(PrintJob printJob, int notifId, String jobName, int pageCount) {
+        printJob.cancel();
+        getSystemService(NotificationManager.class).cancel(notifId);
+
+        PrintJobHistory.addJob(this, new PrintJobHistory.JobRecord(
+                jobName, System.currentTimeMillis(), "CANCELLED", "Cancelled by user", pageCount));
+    }
+
+    private void copyToFile(ParcelFileDescriptor pfd, File dest) throws IOException {
+        InputStream in = new FileInputStream(pfd.getFileDescriptor());
+        FileOutputStream out = new FileOutputStream(dest);
+        byte[] buf = new byte[8192];
+        int len;
+        while ((len = in.read(buf)) != -1) {
+            out.write(buf, 0, len);
+        }
+        out.close();
+        in.close();
     }
 
     // -------------------------------------------------------------------------
@@ -133,9 +244,7 @@ public class Xerox3025PrintService extends PrintService {
 
         @Override
         public void onStartPrinterStateTracking(PrinterId printerId) {
-            // Re-advertise with full capabilities when tracked
-            List<PrinterInfo> printers = buildPrinterList();
-            addPrinters(printers);
+            addPrinters(buildPrinterList());
         }
 
         @Override
@@ -153,27 +262,21 @@ public class Xerox3025PrintService extends PrintService {
             PrinterId printerId = service.generatePrinterId("xerox3025_" + ip);
 
             PrinterCapabilitiesInfo capabilities = new PrinterCapabilitiesInfo.Builder(printerId)
-                    // Paper sizes
                     .addMediaSize(PrintAttributes.MediaSize.ISO_A4, true)
                     .addMediaSize(PrintAttributes.MediaSize.NA_LETTER, false)
                     .addMediaSize(PrintAttributes.MediaSize.ISO_A5, false)
-                    // Resolutions
                     .addResolution(new PrintAttributes.Resolution("600dpi", "600 dpi", 600, 600), true)
                     .addResolution(new PrintAttributes.Resolution("300dpi", "300 dpi", 300, 300), false)
-                    // Color modes — 3025 is mono only
                     .setColorModes(
                             PrintAttributes.COLOR_MODE_MONOCHROME,
                             PrintAttributes.COLOR_MODE_MONOCHROME)
-                    // Duplex
                     .setDuplexModes(
                             PrintAttributes.DUPLEX_MODE_NONE | PrintAttributes.DUPLEX_MODE_LONG_EDGE,
                             PrintAttributes.DUPLEX_MODE_NONE)
                     .build();
 
             PrinterInfo printer = new PrinterInfo.Builder(
-                    printerId,
-                    displayName,
-                    PrinterInfo.STATUS_IDLE)
+                    printerId, displayName, PrinterInfo.STATUS_IDLE)
                     .setCapabilities(capabilities)
                     .build();
 
