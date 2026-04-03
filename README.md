@@ -1,101 +1,106 @@
 # Xerox WorkCentre 3025 — Android Print Plugin
 
+[![Release](https://img.shields.io/github/v/release/pirvu/android-print-plugin-xerox-workcenter-3025-wifi?label=Download%20APK)](../../releases/latest)
+[![Build](https://img.shields.io/github/actions/workflow/status/pirvu/android-print-plugin-xerox-workcenter-3025-wifi/build.yml?label=Build)](../../actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Android](https://img.shields.io/badge/Android-8.0%2B-green.svg)]()
+
 Print from any Android app to a Xerox WorkCentre 3025 over Wi-Fi. No cloud, no accounts, no third-party servers. Just local printing that works.
 
 > *I built this out of pure frustration. I have a perfectly good Xerox WorkCentre 3025 sitting on my desk, it works fine from my Mac and PC, but Android? Nothing. The official Xerox app fails, Mopria says "unsupported", and Google Cloud Print is long dead. The only alternatives I found were paid apps that want full network access and god knows what else — no thanks. So I wrote my own. It talks directly to the printer over your local Wi-Fi, nothing leaves your network, and it just works. This is a working MVP — not pretty, but functional. If you have the same printer and the same frustration, this is for you.*
 
-## Why this exists
+---
 
-The Xerox WorkCentre 3025 has no working Android print support:
+## Install
 
-- **Xerox Print Service Plugin** — "Printer blocked / Document failed to print"
-- **Mopria Print Service** — "Printer unsupported"
-- **Google Cloud Print** — discontinued in 2021
+### Step 1: Download the APK
 
-There are some paid third-party apps out there, but I don't trust them with my documents and network access. I just wanted something simple and local that I could verify myself.
+Download the latest APK from the [Releases page](../../releases/latest).
 
-So I built this. It talks directly to the printer over your local network using IPP — the same protocol macOS uses via AirPrint. No internet, no middlemen.
+### Step 2: Install on your phone
 
-## Status
+1. Transfer the APK to your phone (email it to yourself, use a file manager, or download directly)
+2. Open the APK file on your phone
+3. If prompted, allow installation from unknown sources:
+   - **Android 8+**: You'll see *"Your phone isn't allowed to install unknown apps from this source"* — tap **Settings** and enable **Allow from this source**
+   - **Older Android**: Go to **Settings > Security** and enable **Unknown sources**
+4. Tap **Install**
 
-**Working MVP.** Tested with the following content types, all printed correctly:
+### Step 3: Set up the printer
 
-- Multi-page documents (3-page invoice)
-- Dense text (full page of small font)
-- Grayscale gradients (6 distinct bands)
-- Vector graphics (shapes, lines, curves)
-- Different paper sizes (A4, US Letter)
-- Different fonts (Helvetica, Courier, Times-Roman)
+1. Open the **Xerox 3025 Print Plugin** app
+2. Set your **Printer IP Address** (you can find this on the printer's display or its config page)
+3. Tap **Test Network Connection** to verify the printer is reachable
 
-See [DEBUGLOG.md](DEBUGLOG.md) for the full testing and debugging history.
+### Step 4: Enable the print service
 
-## Quick start
+1. Go to **Android Settings**
+2. Navigate to **Connected devices > Printing** (or search for "Printing" in settings)
+3. Find **Xerox 3025 Print Plugin** and turn it **ON**
 
-1. Download `app-debug.apk` from [Releases](../../releases) (or build from source)
-2. Install the APK on your phone
-3. Open the app and set your **printer's IP address**
-4. Go to **Android Settings > Connected devices > Printing** and enable **Xerox 3025 Print Plugin**
-5. Print from any app — select **Xerox WorkCentre 3025** in the print dialog
+> This step is required — Android won't use the plugin until you enable it.
 
-> **Tip:** Give your printer a static IP in your router's DHCP settings so it doesn't change.
+### Step 5: Print!
 
-## How it works
+Open any document, photo, or web page, tap **Share** or **Print**, and select **Xerox WorkCentre 3025** as the printer.
 
-1. Android renders the document to PDF
-2. The plugin renders each page to a 600 DPI bitmap using `PdfRenderer`
-3. Bitmaps are converted to grayscale and encoded as URF (Universal Raster Format) with PWG compression
-4. The URF data is sent to the printer via IPP (Internet Printing Protocol) on port 631
+---
 
-The Xerox WorkCentre 3025 only accepts **URF** (`image/urf`) and **QPDL** (`application/x-QPDL`). Standard PCL, PostScript, and raw PDF are not supported — which is why the official apps fail.
+## Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/main-screen.png" width="270" alt="App main screen">
+  &nbsp;&nbsp;&nbsp;
+  <img src="docs/screenshots/network-test.png" width="270" alt="Network test dialog">
+</p>
+
+<p align="center">
+  <em>App settings screen &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Network connectivity test</em>
+</p>
+
+---
 
 ## Features
 
-- **Print any document** — PDF pages rendered at 600 DPI, sent as URF via IPP
-- **Network test** — check connectivity to printer (DNS, ping, port 9100, IPP port 631)
-- **Print test page** — send a pre-rendered test page to verify the connection
-- **Print test suite** — print 5 diverse test documents (invoice, grayscale, text, shapes, letter size)
-- **Job history** — view recent print jobs with status
-- **Debug logs** — view diagnostic logs for troubleshooting
-- **Notifications** — progress and completion notifications for print jobs
+- **Print from any app** — documents, photos, web pages, emails — anything that supports Android's print system
+- **100% local** — talks directly to the printer over Wi-Fi, nothing leaves your network
+- **Network diagnostics** — test connectivity to your printer with one tap
+- **Test pages** — verify the connection works before printing real documents
+- **Job history** — see what you've printed and whether it succeeded
+- **Notifications** — get notified when a print job completes or fails
 
-## Building from source
+## How it works
 
-### GitHub Actions (recommended)
+The plugin acts as an Android Print Service. When you print from any app:
 
-APKs are automatically built on every push to `main`. To create a release:
+1. Android renders the document to PDF
+2. The plugin renders each page to a 600 DPI bitmap
+3. Bitmaps are converted to grayscale and encoded as URF (the format the printer expects)
+4. The data is sent to the printer via IPP on port 631
 
-```bash
-git tag v1.0.0
-git push --tags
-```
+> **Why do official apps fail?** The Xerox WorkCentre 3025 only accepts URF and QPDL formats — it doesn't support PCL, PostScript, or raw PDF that most Android print apps try to send.
 
-GitHub Actions builds the APK, creates a [Release](../../releases), and attaches the APK for download. Versioning is derived from the tag — `v1.2.3` becomes versionName `1.2.3` and versionCode `10203`.
+## Compatibility
 
-### Local build (Docker)
-
-```bash
-./build.sh              # dev build
-./build.sh 1.0.0 10000  # specific version
-```
+| | |
+|---|---|
+| **Printer** | Xerox WorkCentre 3025 (may work with similar Samsung-engine Xerox models) |
+| **Android** | 8.0 (Oreo) and above |
+| **Paper sizes** | A4, US Letter, A5 |
+| **Print quality** | 600 DPI, grayscale (monochrome printer) |
+| **Connection** | Wi-Fi (printer and phone must be on the same network) |
 
 ## Troubleshooting
 
-- **Printer not appearing in print dialog** — Make sure the plugin is enabled in Settings > Printing. If it still doesn't appear, try: Settings > Apps > Show system apps > Print Spooler > Clear data, then re-enable the plugin.
-- **Print job fails** — Use "Test Network Connection" in the app to verify the printer is reachable.
-- **Nothing prints** — Check "View Debug Logs" in the app for detailed error info.
-- **Testing the pipeline** — Use "Print via Android Framework" in the app to open the print dialog with a test document, or "Run Print Test Suite" to send 5 test documents directly.
+| Problem | Solution |
+|---|---|
+| Printer not in print dialog | Enable the plugin: Settings > Printing > Xerox 3025 Print Plugin > ON |
+| Still not appearing | Clear print spooler: Settings > Apps > Show system > Print Spooler > Clear data |
+| Print job fails | Open the app > **Test Network Connection** to check connectivity |
+| Nothing comes out | Open the app > **View Debug Logs** for detailed error info |
+| Wrong IP address | Check your printer's display or web interface at `http://<ip>/sws/index.html` |
 
-## Future ideas
-
-This is a working MVP. Some things that could be added:
-
-- Better UI (Material Design, proper settings layout)
-- Automatic printer discovery (mDNS/Bonjour)
-- Duplex printing support
-- Scanning support (the 3025 has a scanner)
-- Support for other Xerox/Samsung SPL printers
-
-Contributions welcome.
+> **Tip:** Give your printer a static IP in your router's DHCP settings so it doesn't change.
 
 ## Privacy
 
@@ -103,11 +108,20 @@ This app:
 - Makes **no internet connections** of any kind
 - Has **no analytics, tracking, or telemetry**
 - Only accesses your **local network** to reach the printer
-- Stores settings **locally** via Android SharedPreferences only
+- Stores settings **locally** on your device only
+- Is fully **open source** — verify it yourself
 
-## Technical details
+## Roadmap
 
-See [SPEC.md](SPEC.md) for the full technical specification (URF format, IPP protocol, project structure).
+This is a working MVP. Possible future additions:
+
+- [ ] Better UI (Material Design)
+- [ ] Automatic printer discovery (no more typing IP addresses)
+- [ ] Duplex printing
+- [ ] Scanning support
+- [ ] Support for similar Xerox/Samsung SPL printers
+
+[Contributions welcome!](CONTRIBUTING.md)
 
 ## Acknowledgments
 
@@ -115,4 +129,4 @@ Built with the help of [Claude Code](https://claude.ai/code) — from reverse-en
 
 ## License
 
-MIT
+[MIT](LICENSE)
