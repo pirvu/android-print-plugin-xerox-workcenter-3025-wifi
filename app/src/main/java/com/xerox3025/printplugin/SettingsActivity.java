@@ -123,6 +123,14 @@ public class SettingsActivity extends AppCompatActivity {
                     return true;
                 });
             }
+
+            Preference runTests = findPreference("run_test_suite");
+            if (runTests != null) {
+                runTests.setOnPreferenceClickListener(pref -> {
+                    runPrintTestSuite();
+                    return true;
+                });
+            }
         }
 
         private String getPrinterIp() {
@@ -304,21 +312,45 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         private byte[] generateMinimalPdf() {
-            // Minimal valid PDF with "Test Print from Android" text
+            // 2-page test PDF with varied content for print quality testing
+            String p1 = "BT\n" +
+                    "/F1 36 Tf 50 780 Td (Print Quality Test) Tj\n" +
+                    "/F1 12 Tf 0 -50 Td (Normal text at 12pt) Tj\n" +
+                    "0 -20 Td (The quick brown fox jumps over the lazy dog.) Tj\n" +
+                    "0 -20 Td (ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789) Tj\n" +
+                    "/F1 8 Tf 0 -30 Td (Small 8pt: Should be readable at 600 DPI) Tj\n" +
+                    "/F1 24 Tf 0 -40 Td (Large 24pt heading) Tj\n" +
+                    "/F1 12 Tf 0 -30 Td (Repeated patterns:) Tj\n" +
+                    "0 -20 Td (||||||||||||||||||||||||||||||||||||||||) Tj\n" +
+                    "0 -20 Td (========================================) Tj\n" +
+                    "0 -20 Td (########################################) Tj\n" +
+                    "/F1 14 Tf 0 -40 Td (Page 1 of 2) Tj\n" +
+                    "ET\n" +
+                    "0.5 w 50 430 m 545 430 l S\n";
+            String p2 = "BT\n" +
+                    "/F1 28 Tf 50 780 Td (Page 2: Layout Test) Tj\n" +
+                    "/F1 12 Tf 50 720 Td (Left aligned) Tj 350 720 Td (Right area) Tj\n" +
+                    "/F1 16 Tf 50 680 Td (Medium 16pt heading) Tj\n" +
+                    "/F1 10 Tf 50 650 Td (Body text below the heading for layout testing.) Tj\n" +
+                    "50 635 Td (Row 1: 100 200 300 400 500) Tj\n" +
+                    "50 620 Td (Row 2: 150 250 350 450 550) Tj\n" +
+                    "/F1 14 Tf 50 480 Td (End of test - Page 2 of 2) Tj\n" +
+                    "ET\n";
             String pdf = "%PDF-1.4\n" +
                     "1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n" +
-                    "2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n" +
-                    "3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Contents 4 0 R/Resources<</Font<</F1 5 0 R>>>>>>endobj\n" +
-                    "4 0 obj<</Length 44>>stream\nBT /F1 24 Tf 100 700 Td (Test Print) Tj ET\nendstream\nendobj\n" +
+                    "2 0 obj<</Type/Pages/Kids[3 0 R 6 0 R]/Count 2>>endobj\n" +
+                    "3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]" +
+                    "/Contents 4 0 R/Resources<</Font<</F1 5 0 R>>>>>>endobj\n" +
+                    "4 0 obj<</Length " + p1.length() + ">>stream\n" + p1 + "endstream\nendobj\n" +
                     "5 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>endobj\n" +
-                    "xref\n0 6\n" +
-                    "0000000000 65535 f \n" +
-                    "0000000009 00000 n \n" +
-                    "0000000058 00000 n \n" +
-                    "0000000115 00000 n \n" +
-                    "0000000266 00000 n \n" +
-                    "0000000360 00000 n \n" +
-                    "trailer<</Size 6/Root 1 0 R>>\nstartxref\n433\n%%EOF";
+                    "6 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]" +
+                    "/Contents 7 0 R/Resources<</Font<</F1 5 0 R>>>>>>endobj\n" +
+                    "7 0 obj<</Length " + p2.length() + ">>stream\n" + p2 + "endstream\nendobj\n" +
+                    "xref\n0 8\n" +
+                    "0000000000 65535 f \n0000000009 00000 n \n0000000058 00000 n \n" +
+                    "0000000115 00000 n \n0000000266 00000 n \n0000000900 00000 n \n" +
+                    "0000000977 00000 n \n0000001100 00000 n \n" +
+                    "trailer<</Size 8/Root 1 0 R>>\nstartxref\n1400\n%%EOF";
             return pdf.getBytes();
         }
 
@@ -350,6 +382,102 @@ public class SettingsActivity extends AppCompatActivity {
                         Toast.makeText(requireContext(), "Logs cleared", Toast.LENGTH_SHORT).show();
                     })
                     .show();
+        }
+
+        private void runPrintTestSuite() {
+            String ip = getPrinterIp();
+            String[] testFiles = {
+                    "invoice_3page.pdf",
+                    "grayscale_test.pdf",
+                    "dense_text.pdf",
+                    "shapes_test.pdf",
+                    "letter_size.pdf"
+            };
+
+            AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                    .setTitle("Print Test Suite")
+                    .setMessage("Starting test suite (5 documents)...")
+                    .setCancelable(false)
+                    .create();
+            dialog.show();
+
+            new Thread(() -> {
+                StringBuilder results = new StringBuilder();
+                int passed = 0, failed = 0;
+
+                for (int t = 0; t < testFiles.length; t++) {
+                    String name = testFiles[t];
+                    String status;
+                    try {
+                        String path = requireContext().getCacheDir() + "/" + name;
+                        java.io.File pdfFile = new java.io.File(path);
+                        if (!pdfFile.exists()) {
+                            status = "SKIP (file not found)";
+                            failed++;
+                            results.append(String.format("%d. %s: %s\n", t + 1, name, status));
+                            continue;
+                        }
+
+                        int msgNum = t + 1;
+                        requireActivity().runOnUiThread(() ->
+                                dialog.setMessage("Test " + msgNum + "/" + testFiles.length + ": " + name));
+
+                        android.os.ParcelFileDescriptor pfd = android.os.ParcelFileDescriptor.open(
+                                pdfFile, android.os.ParcelFileDescriptor.MODE_READ_ONLY);
+                        android.graphics.pdf.PdfRenderer renderer =
+                                new android.graphics.pdf.PdfRenderer(pfd);
+                        int pageCount = renderer.getPageCount();
+
+                        android.graphics.Bitmap[] pages = new android.graphics.Bitmap[pageCount];
+                        for (int i = 0; i < pageCount; i++) {
+                            android.graphics.pdf.PdfRenderer.Page page = renderer.openPage(i);
+                            android.graphics.Bitmap bmp = android.graphics.Bitmap.createBitmap(
+                                    UrfEncoder.A4_WIDTH_600, UrfEncoder.A4_HEIGHT_600,
+                                    android.graphics.Bitmap.Config.ARGB_8888);
+                            bmp.eraseColor(0xFFFFFFFF);
+                            page.render(bmp, null, null,
+                                    android.graphics.pdf.PdfRenderer.Page.RENDER_MODE_FOR_PRINT);
+                            page.close();
+                            pages[i] = bmp;
+                        }
+                        renderer.close();
+                        pfd.close();
+
+                        byte[] urfData = UrfEncoder.encode(pages);
+                        for (android.graphics.Bitmap bmp : pages) {
+                            if (bmp != null && !bmp.isRecycled()) bmp.recycle();
+                        }
+
+                        IppClient.IppResult result = IppClient.sendPrintJob(ip, urfData, name);
+
+                        if (result.success) {
+                            status = String.format("OK (%d pages, %d KB URF)",
+                                    pageCount, urfData.length / 1024);
+                            passed++;
+                        } else {
+                            status = "IPP ERROR: " + result.message;
+                            failed++;
+                        }
+
+                        // Brief pause between jobs so printer can process
+                        Thread.sleep(3000);
+
+                    } catch (Exception e) {
+                        status = "FAIL: " + e.getMessage();
+                        failed++;
+                    }
+                    results.append(String.format("%d. %s: %s\n", t + 1, name, status));
+                }
+
+                String summary = String.format(
+                        "Results: %d passed, %d failed\n\n%s", passed, failed, results);
+                requireActivity().runOnUiThread(() -> {
+                    dialog.setMessage(summary);
+                    dialog.setCancelable(true);
+                    dialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
+                            (d, w) -> d.dismiss());
+                });
+            }).start();
         }
 
         private byte[] loadAsset(String filename) throws IOException {

@@ -18,6 +18,9 @@ import android.printservice.PrinterDiscoverySession;
 import androidx.core.app.NotificationCompat;
 import androidx.preference.PreferenceManager;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -31,6 +34,7 @@ public class Xerox3025PrintService extends PrintService {
     private static final String TAG = "Xerox3025Print";
     private static final String CHANNEL_ID = "print_jobs";
     private volatile boolean cancelled = false;
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @Override
     public void onCreate() {
@@ -72,34 +76,50 @@ public class Xerox3025PrintService extends PrintService {
 
     @Override
     protected void onPrintJobQueued(PrintJob printJob) {
-        PrintLog.i(TAG, "onPrintJobQueued called: " + printJob.getInfo().getLabel());
+        // All PrintJob methods must be called on the main thread
+        String jobName = printJob.getInfo().getLabel();
+        int notifId = printJob.getId().hashCode();
+        PrintLog.i(TAG, "onPrintJobQueued called: " + jobName);
         cancelled = false;
+        printJob.start();
+
+        // Get document data on main thread
+        PrintDocument document = printJob.getDocument();
+        ParcelFileDescriptor pfd = document.getData();
+        if (pfd == null) {
+            PrintLog.e(TAG, "No document data");
+            printJob.fail("No document data available");
+            PrintJobHistory.addJob(this, new PrintJobHistory.JobRecord(
+                    jobName, System.currentTimeMillis(), "FAILED",
+                    "No document data available", 0));
+            return;
+        }
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String printerIp = prefs.getString("printer_ip", "192.168.0.109");
+
         new Thread(() -> {
             try {
-                processPrintJob(printJob);
+                processPrintJob(printJob, jobName, notifId, pfd, printerIp);
             } catch (Exception e) {
                 PrintLog.e(TAG, "Uncaught exception in processPrintJob", e);
-                try {
-                    printJob.fail("Internal error: " + e.getMessage());
-                } catch (Exception ignored) {}
+                mainHandler.post(() -> {
+                    try { printJob.fail("Internal error: " + e.getMessage()); }
+                    catch (Exception ignored) {}
+                });
                 PrintJobHistory.addJob(getApplicationContext(),
-                        new PrintJobHistory.JobRecord(
-                                printJob.getInfo().getLabel(),
+                        new PrintJobHistory.JobRecord(jobName,
                                 System.currentTimeMillis(), "FAILED",
                                 "Crash: " + e.getMessage(), 0));
             }
         }).start();
     }
 
-    private void processPrintJob(PrintJob printJob) {
-        printJob.start();
-
-        String jobName = printJob.getInfo().getLabel();
-        int notifId = printJob.getId().hashCode();
-
+    private void processPrintJob(PrintJob printJob, String jobName, int notifId,
+                                  ParcelFileDescriptor pfd, String printerIp) {
         PrintLog.i(TAG, "Starting print job: " + jobName);
 
-        // Show ongoing notification (may silently fail if permission not granted)
+        // Show ongoing notification
         NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_printer)
                 .setContentTitle("Printing...")
@@ -110,18 +130,6 @@ public class Xerox3025PrintService extends PrintService {
             getSystemService(NotificationManager.class).notify(notifId, notifBuilder.build());
         } catch (Exception e) {
             PrintLog.w(TAG, "Could not show notification: " + e.getMessage());
-        }
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String printerIp = prefs.getString("printer_ip", "192.168.0.109");
-
-        PrintDocument document = printJob.getDocument();
-        ParcelFileDescriptor pfd = document.getData();
-
-        if (pfd == null) {
-            PrintLog.e(TAG, "No document data");
-            failJob(printJob, notifId, jobName, "No document data available", 0);
-            return;
         }
 
         File tempFile = null;
@@ -145,7 +153,11 @@ public class Xerox3025PrintService extends PrintService {
                     PrintLog.i(TAG, "Job cancelled by user");
                     renderer.close();
                     tempPfd.close();
-                    cancelJob(printJob, notifId, jobName, pageCount);
+                    mainHandler.post(printJob::cancel);
+                    getSystemService(NotificationManager.class).cancel(notifId);
+                    PrintJobHistory.addJob(this, new PrintJobHistory.JobRecord(
+                            jobName, System.currentTimeMillis(), "CANCELLED",
+                            "Cancelled by user", pageCount));
                     return;
                 }
 
@@ -181,7 +193,11 @@ public class Xerox3025PrintService extends PrintService {
 
             if (cancelled) {
                 PrintLog.i(TAG, "Job cancelled by user");
-                cancelJob(printJob, notifId, jobName, pageCount);
+                mainHandler.post(printJob::cancel);
+                getSystemService(NotificationManager.class).cancel(notifId);
+                PrintJobHistory.addJob(this, new PrintJobHistory.JobRecord(
+                        jobName, System.currentTimeMillis(), "CANCELLED",
+                        "Cancelled by user", pageCount));
                 return;
             }
 
@@ -190,7 +206,7 @@ public class Xerox3025PrintService extends PrintService {
 
             if (result.success) {
                 PrintLog.i(TAG, "Print job completed: " + jobName);
-                printJob.complete();
+                mainHandler.post(printJob::complete);
 
                 // Update notification
                 try {
@@ -202,51 +218,40 @@ public class Xerox3025PrintService extends PrintService {
                     getSystemService(NotificationManager.class).notify(notifId, notifBuilder.build());
                 } catch (Exception ignored) {}
 
-                // Record history
                 PrintJobHistory.addJob(this, new PrintJobHistory.JobRecord(
                         jobName, System.currentTimeMillis(), "COMPLETED",
                         urfData.length + " bytes, " + pageCount + " page(s)", pageCount));
             } else {
-                failJob(printJob, notifId, jobName, result.message, pageCount);
+                PrintLog.e(TAG, "IPP failed: " + result.message);
+                mainHandler.post(() -> printJob.fail(result.message));
+                try {
+                    NotificationCompat.Builder notif = new NotificationCompat.Builder(this, CHANNEL_ID)
+                            .setSmallIcon(R.drawable.ic_printer)
+                            .setContentTitle("Print failed")
+                            .setContentText(result.message)
+                            .setOngoing(false).setAutoCancel(true);
+                    getSystemService(NotificationManager.class).notify(notifId, notif.build());
+                } catch (Exception ignored) {}
+                PrintJobHistory.addJob(this, new PrintJobHistory.JobRecord(
+                        jobName, System.currentTimeMillis(), "FAILED",
+                        result.message, pageCount));
             }
 
         } catch (IOException e) {
             PrintLog.e(TAG, "Print failed: " + e.getMessage(), e);
-            failJob(printJob, notifId, jobName,
-                    "Could not print to " + printerIp + " — " + e.getMessage(), 0);
+            String reason = "Could not print to " + printerIp + " — " + e.getMessage();
+            mainHandler.post(() -> printJob.fail(reason));
+            PrintJobHistory.addJob(this, new PrintJobHistory.JobRecord(
+                    jobName, System.currentTimeMillis(), "FAILED", reason, 0));
         } catch (OutOfMemoryError e) {
             PrintLog.e(TAG, "Out of memory rendering PDF");
-            failJob(printJob, notifId, jobName,
-                    "Document too large to render at 600 DPI", 0);
+            String reason = "Document too large to render at 600 DPI";
+            mainHandler.post(() -> printJob.fail(reason));
+            PrintJobHistory.addJob(this, new PrintJobHistory.JobRecord(
+                    jobName, System.currentTimeMillis(), "FAILED", reason, 0));
         } finally {
             if (tempFile != null) tempFile.delete();
         }
-    }
-
-    private void failJob(PrintJob printJob, int notifId, String jobName,
-                          String reason, int pageCount) {
-        printJob.fail(reason);
-
-        try {
-            NotificationCompat.Builder notif = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ic_printer)
-                    .setContentTitle("Print failed")
-                    .setContentText(reason)
-                    .setOngoing(false)
-                    .setAutoCancel(true);
-            getSystemService(NotificationManager.class).notify(notifId, notif.build());
-        } catch (Exception ignored) {}
-
-        PrintJobHistory.addJob(this, new PrintJobHistory.JobRecord(
-                jobName, System.currentTimeMillis(), "FAILED", reason, pageCount));
-    }
-
-    private void cancelJob(PrintJob printJob, int notifId, String jobName, int pageCount) {
-        printJob.cancel();
-        getSystemService(NotificationManager.class).cancel(notifId);
-
-        PrintJobHistory.addJob(this, new PrintJobHistory.JobRecord(
-                jobName, System.currentTimeMillis(), "CANCELLED", "Cancelled by user", pageCount));
     }
 
     private void copyToFile(ParcelFileDescriptor pfd, File dest) throws IOException {

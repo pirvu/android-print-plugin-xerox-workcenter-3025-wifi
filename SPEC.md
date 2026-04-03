@@ -53,12 +53,13 @@ Per page:
     [20-23] resolution (uint32 BE) = 600
     [24-31] reserved (zeros)
 
-  Raster data (PWG compression):
+  Raster data (CUPS PackBits compression):
     Per scanline:
       1 byte: line repeat count (0 = no repeat, N = repeat N more times)
       Compressed line bytes:
         0-127:   repeat next byte (N+1) times
-        128-255: copy next (N-127) literal bytes
+        128:     no-op (never emitted by encoder)
+        129-255: next (257-N) bytes are literal data
 ```
 
 ### IPP Protocol
@@ -113,7 +114,9 @@ app/src/main/
 
 ### Xerox3025PrintService.java
 - Extends `android.printservice.PrintService`
+- `onPrintJobQueued()`: extracts job info on main thread, calls `printJob.start()`, spawns background thread
 - `processPrintJob()`: PDF → PdfRenderer → Bitmap → UrfEncoder → IppClient
+- All `PrintJob` lifecycle methods (`complete()`, `fail()`, `cancel()`) called via `mainHandler.post()` (required by Android framework)
 - Notification channel for print job progress/completion
 - Records job history on completion/failure
 
@@ -128,9 +131,11 @@ app/src/main/
 - Parses IPP response status codes
 
 ### SettingsActivity.java
-- Printer configuration (IP, display name)
+- Printer configuration (IP, display name) — persisted via SharedPreferences
 - Network connectivity test (DNS, ping, TCP 9100, IPP 631)
 - Test page printing (pre-rendered URF via IPP)
+- Print via Android Framework (opens Android print dialog with test PDF)
+- Print test suite (5 documents: invoice, grayscale, dense text, shapes, letter size)
 - Job history viewer
 - Debug log viewer with copy/clear
 
@@ -157,6 +162,24 @@ app/src/main/
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 ```
+
+## Testing
+
+### Verified Test Results (2026-04-03)
+
+All tests run from Android emulator (API 34, ARM64) to physical Xerox WorkCentre 3025 printer:
+
+| Test | Pages | URF Size | Content | Result |
+|------|-------|----------|---------|--------|
+| invoice_3page.pdf | 3 | 783 KB | Multi-page invoice (Courier font) | Printed |
+| grayscale_test.pdf | 1 | 19 KB | 6 grayscale bands (5%-100%) | Printed |
+| dense_text.pdf | 1 | 2,260 KB | Full page Lorem ipsum (Times-Roman) | Printed |
+| shapes_test.pdf | 1 | 184 KB | Rectangles, circle, lines, curves | Printed |
+| letter_size.pdf | 1 | 182 KB | US Letter format (612x792pt) | Printed |
+
+The app includes a "Run Print Test Suite" button that sends all 5 documents directly through the PDF→URF→IPP pipeline. Test PDFs must be placed in the app's cache directory.
+
+See [DEBUGLOG.md](DEBUGLOG.md) for detailed debugging history.
 
 ## Privacy & Security
 

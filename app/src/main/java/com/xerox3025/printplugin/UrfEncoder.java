@@ -102,46 +102,47 @@ public class UrfEncoder {
     }
 
     /**
-     * PWG raster compression for one scanline.
-     * 0-127: repeat next byte (N+1) times
-     * 128-255: copy next (N-127) literal bytes
+     * PWG raster compression for one scanline (CUPS PackBits variant).
+     * Byte 0-127: repeat next byte (N+1) times
+     * Byte 128: no-op (never used by encoder)
+     * Byte 129-255: next (257-N) bytes are literal data
      */
     private static void pwgEncodeLine(ByteArrayOutputStream out, byte[] row) {
         int i = 0;
         while (i < row.length) {
-            byte val = row[i];
+            // Count run of identical bytes
             int run = 1;
-            while (i + run < row.length && row[i + run] == val && run < 128) {
+            while (i + run < row.length && row[i + run] == row[i] && run < 128) {
                 run++;
             }
 
-            if (run >= 2) {
-                // Repeat encoding
+            if (run >= 3 || (run >= 2 && i + run >= row.length)) {
+                // Encode as run: byte (run-1), value
                 out.write(run - 1);
-                out.write(val & 0xFF);
+                out.write(row[i] & 0xFF);
                 i += run;
             } else {
-                // Literal encoding
+                // Collect literal bytes (non-repeating or short runs)
                 int litStart = i;
-                ByteArrayOutputStream lit = new ByteArrayOutputStream();
-                while (i < row.length && lit.size() < 128) {
-                    byte v = row[i];
+                int litCount = 0;
+                while (i < row.length && litCount < 128) {
+                    // Look ahead for a run of 3+
                     int r = 1;
-                    while (i + r < row.length && row[i + r] == v && r < 128) {
+                    while (i + r < row.length && row[i + r] == row[i] && r < 128) {
                         r++;
                     }
-                    if (r >= 2 && lit.size() > 0) {
-                        break;
+                    if (r >= 3 && litCount > 0) {
+                        break; // End literal, handle run next iteration
                     }
-                    lit.write(v & 0xFF);
-                    i++;
+                    // Include this byte (and any short run of 1-2) in literals
+                    int take = Math.min(r, 2);
+                    if (litCount + take > 128) break;
+                    litCount += take;
+                    i += take;
                 }
-                out.write(lit.size() - 1 + 128);
-                try {
-                    lit.writeTo(out);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                // Encode as literal: byte (257-count), then count bytes
+                out.write(257 - litCount);
+                out.write(row, litStart, litCount);
             }
         }
     }

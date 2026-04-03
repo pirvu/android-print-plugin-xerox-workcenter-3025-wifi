@@ -47,6 +47,11 @@
             app:title="@string/pref_view_logs"
             app:summary="@string/pref_view_logs_summary" />
 
+        <Preference
+            app:key="run_test_suite"
+            app:title="@string/pref_run_test_suite"
+            app:summary="@string/pref_run_test_suite_summary" />
+
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/pref_category_instructions">

@@ -21,6 +21,9 @@
     <string name="pref_view_logs">View Debug Logs</string>
     <string name="pref_view_logs_summary">View print service diagnostic logs</string>
 
+    <string name="pref_run_test_suite">Run Print Test Suite</string>
+    <string name="pref_run_test_suite_summary">Print 5 test documents: invoice, grayscale, dense text, shapes, letter size</string>
+
     <string name="pref_category_instructions">How to use</string>
     <string name="pref_info_title">Setup Instructions</string>
     <string name="pref_info_summary">1. Set the printer IP above\n2. Go to Android Settings → Connected devices → Printing\n3. Enable \"Xerox 3025 Print Plugin\"\n4. Print any document and select \"Xerox WorkCentre 3025\"</string>

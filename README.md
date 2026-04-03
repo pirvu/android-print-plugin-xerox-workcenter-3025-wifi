@@ -63,10 +63,13 @@ This uses Docker with the Android SDK to build and outputs `app-debug.apk` in th
 
 ## Troubleshooting
 
-- **Printer not appearing** — Make sure the plugin is enabled in Settings → Printing
+- **Printer not appearing** — Make sure the plugin is enabled in Settings → Printing. If it still doesn't appear, try clearing the print spooler data: Settings → Apps → Show system apps → Print Spooler → Clear data, then re-enable the plugin.
 - **Job fails** — Use "Test Network Connection" in the app to verify connectivity
 - **No output** — Check "View Debug Logs" for detailed error information
+- **"Print via Android Framework"** — Use this button in the app to test the full print pipeline. It opens Android's print dialog with a test document.
 - **Check the printer's web interface** at `http://<printer-ip>/sws/index.html`
+
+See [DEBUGLOG.md](DEBUGLOG.md) for detailed debugging history.
 
 ## Privacy
 
