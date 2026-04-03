@@ -23,6 +23,11 @@
     <PreferenceCategory app:title="@string/pref_category_diagnostics">
 
         <Preference
+            app:key="scan_document"
+            app:title="@string/pref_scan_document"
+            app:summary="@string/pref_scan_document_summary" />
+
+        <Preference
             app:key="test_network"
             app:title="@string/pref_test_network"
             app:summary="@string/pref_test_network_summary" />

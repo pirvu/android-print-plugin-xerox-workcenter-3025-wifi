@@ -29,4 +29,24 @@
     <string name="pref_info_summary">1. Set the printer IP above\n2. Go to Android Settings → Connected devices → Printing\n3. Enable \"Xerox 3025 Print Plugin\"\n4. Print any document and select \"Xerox WorkCentre 3025\"</string>
 
     <string name="no_print_history">No print jobs yet</string>
+
+    <!-- Scan -->
+    <string name="pref_scan_document">Scan Document</string>
+    <string name="pref_scan_document_summary">Scan from the flatbed scanner</string>
+    <string name="scan_title">Scan Document</string>
+    <string name="scan_button">Scan</string>
+    <string name="scan_status_ready">Scanner ready. Place a document on the flatbed and tap Scan.</string>
+    <string name="scan_status_checking">Checking scanner status…</string>
+    <string name="scan_status_scanning">Scanning… please wait</string>
+    <string name="scan_status_retrieving">Retrieving scanned image…</string>
+    <string name="scan_status_done">Scan complete (%d KB)</string>
+    <string name="scan_status_error">Scanner error: %s</string>
+    <string name="scan_status_busy">Scanner busy: %s</string>
+    <string name="scan_status_decode_error">Could not decode scanned image</string>
+    <string name="scan_status_no_data">No image data received from scanner</string>
+    <string name="scan_preview_desc">Scanned image preview</string>
+    <string name="scan_save">Save</string>
+    <string name="scan_share">Share</string>
+    <string name="scan_share_title">Share scanned image</string>
+    <string name="scan_saved">Saved to %s</string>
 </resources>

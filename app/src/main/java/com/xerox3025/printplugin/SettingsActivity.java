@@ -84,6 +84,14 @@ public class SettingsActivity extends AppCompatActivity {
                                 | InputType.TYPE_TEXT_VARIATION_URI));
             }
 
+            Preference scanDoc = findPreference("scan_document");
+            if (scanDoc != null) {
+                scanDoc.setOnPreferenceClickListener(pref -> {
+                    startActivity(new android.content.Intent(requireContext(), ScanActivity.class));
+                    return true;
+                });
+            }
+
             Preference testNetwork = findPreference("test_network");
             if (testNetwork != null) {
                 testNetwork.setOnPreferenceClickListener(pref -> {
