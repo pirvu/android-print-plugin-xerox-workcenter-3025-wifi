@@ -121,7 +121,7 @@ This is a working MVP. Possible future additions:
 - [ ] Scanning support
 - [ ] Support for similar Xerox/Samsung SPL printers
 
-[Contributions welcome!](CONTRIBUTING.md)
+[Contributions welcome!](docs/CONTRIBUTING.md)
 
 ## Acknowledgments
 
