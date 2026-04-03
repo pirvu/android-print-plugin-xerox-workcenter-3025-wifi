@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -18,12 +21,14 @@ jobs:
         run: |
           TAG="${GITHUB_REF_NAME}"          # e.g. v1.2.3
           VERSION_NAME="${TAG#v}"            # e.g. 1.2.3
-          # Generate versionCode from semver: major*10000 + minor*100 + patch
           IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION_NAME"
           VERSION_CODE=$(( ${MAJOR:-0} * 10000 + ${MINOR:-0} * 100 + ${PATCH:-0} ))
           echo "VERSION_NAME=$VERSION_NAME" >> "$GITHUB_OUTPUT"
           echo "VERSION_CODE=$VERSION_CODE" >> "$GITHUB_OUTPUT"
           echo "Version: $VERSION_NAME (code: $VERSION_CODE)"
+
+      - name: Decode release keystore
+        run: echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 -d > release.jks
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -38,6 +43,10 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build Release APK
+        env:
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: |
           ./gradlew assembleRelease \
             -PVERSION_NAME=${{ steps.version.outputs.VERSION_NAME }} \
@@ -51,3 +60,7 @@ jobs:
         with:
           files: xerox-3025-print-plugin-${{ github.ref_name }}.apk
           generate_release_notes: true
+
+      - name: Cleanup keystore
+        if: always()
+        run: rm -f release.jks

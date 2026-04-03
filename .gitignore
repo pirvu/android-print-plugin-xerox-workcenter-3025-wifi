@@ -10,3 +10,8 @@
 local.properties
 app/build/
 app-debug.apk
+*.apk
+.secrets
+.keystore/
+.vscode/
+release.jks
