@@ -34,7 +34,9 @@ See [SPEC.md](SPEC.md) for the full technical specification including:
 
 ## Debugging
 
-See [DEBUGLOG.md](DEBUGLOG.md) for a detailed log of issues found and resolved during development.
+See [docs/emulator-debugging.md](docs/emulator-debugging.md) for a complete guide on setting up and using the Android emulator for debugging, including common issues and solutions.
+
+See [DEBUGLOG.md](DEBUGLOG.md) for a chronological log of issues found and resolved during development.
 
 The app includes built-in diagnostics:
 - **View Debug Logs** — in-app log viewer with copy/clear
