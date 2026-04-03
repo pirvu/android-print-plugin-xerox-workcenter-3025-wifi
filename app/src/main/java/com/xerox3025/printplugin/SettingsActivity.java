@@ -23,7 +23,13 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintDocumentInfo;
+import android.print.PrintManager;
+
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -90,6 +96,14 @@ public class SettingsActivity extends AppCompatActivity {
             if (printTestPage != null) {
                 printTestPage.setOnPreferenceClickListener(pref -> {
                     runPrintTestPage();
+                    return true;
+                });
+            }
+
+            Preference printViaAndroid = findPreference("print_via_android");
+            if (printViaAndroid != null) {
+                printViaAndroid.setOnPreferenceClickListener(pref -> {
+                    runPrintViaAndroid();
                     return true;
                 });
             }
@@ -241,6 +255,71 @@ public class SettingsActivity extends AppCompatActivity {
                             (d, w) -> d.dismiss());
                 });
             }).start();
+        }
+
+        private void runPrintViaAndroid() {
+            PrintManager printManager = (PrintManager) requireContext()
+                    .getSystemService(Context.PRINT_SERVICE);
+
+            PrintDocumentAdapter adapter = new PrintDocumentAdapter() {
+                @Override
+                public void onLayout(android.print.PrintAttributes oldAttributes,
+                                     android.print.PrintAttributes newAttributes,
+                                     android.os.CancellationSignal cancellationSignal,
+                                     LayoutResultCallback callback,
+                                     android.os.Bundle extras) {
+                    PrintDocumentInfo info = new PrintDocumentInfo.Builder("test-document.pdf")
+                            .setContentType(PrintDocumentInfo.CONTENT_TYPE_DOCUMENT)
+                            .setPageCount(1)
+                            .build();
+                    callback.onLayoutFinished(info, true);
+                }
+
+                @Override
+                public void onWrite(android.print.PageRange[] pages,
+                                    android.os.ParcelFileDescriptor destination,
+                                    android.os.CancellationSignal cancellationSignal,
+                                    WriteResultCallback callback) {
+                    try {
+                        // Load test PDF and write it
+                        InputStream in = requireContext().getAssets().open("test_page.urf");
+                        // Actually we need a real PDF. Generate a minimal one.
+                        byte[] pdf = generateMinimalPdf();
+                        FileOutputStream out = new FileOutputStream(destination.getFileDescriptor());
+                        out.write(pdf);
+                        out.close();
+                        callback.onWriteFinished(new android.print.PageRange[]{android.print.PageRange.ALL_PAGES});
+                    } catch (IOException e) {
+                        callback.onWriteFailed(e.getMessage());
+                    }
+                }
+            };
+
+            printManager.print("Test Document", adapter,
+                    new PrintAttributes.Builder()
+                            .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
+                            .setResolution(new PrintAttributes.Resolution("600dpi", "600 dpi", 600, 600))
+                            .setColorMode(PrintAttributes.COLOR_MODE_MONOCHROME)
+                            .build());
+        }
+
+        private byte[] generateMinimalPdf() {
+            // Minimal valid PDF with "Test Print from Android" text
+            String pdf = "%PDF-1.4\n" +
+                    "1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n" +
+                    "2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n" +
+                    "3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Contents 4 0 R/Resources<</Font<</F1 5 0 R>>>>>>endobj\n" +
+                    "4 0 obj<</Length 44>>stream\nBT /F1 24 Tf 100 700 Td (Test Print) Tj ET\nendstream\nendobj\n" +
+                    "5 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>endobj\n" +
+                    "xref\n0 6\n" +
+                    "0000000000 65535 f \n" +
+                    "0000000009 00000 n \n" +
+                    "0000000058 00000 n \n" +
+                    "0000000115 00000 n \n" +
+                    "0000000266 00000 n \n" +
+                    "0000000360 00000 n \n" +
+                    "trailer<</Size 6/Root 1 0 R>>\nstartxref\n433\n%%EOF";
+            return pdf.getBytes();
         }
 
         private void showLogViewer() {

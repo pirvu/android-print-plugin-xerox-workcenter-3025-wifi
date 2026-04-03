@@ -33,6 +33,11 @@
             app:summary="@string/pref_print_test_page_summary" />
 
         <Preference
+            app:key="print_via_android"
+            app:title="@string/pref_print_via_android"
+            app:summary="@string/pref_print_via_android_summary" />
+
+        <Preference
             app:key="job_history"
             app:title="@string/pref_job_history"
             app:summary="@string/pref_job_history_summary" />

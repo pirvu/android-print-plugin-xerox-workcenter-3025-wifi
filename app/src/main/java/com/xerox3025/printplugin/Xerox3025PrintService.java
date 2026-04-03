@@ -35,6 +35,7 @@ public class Xerox3025PrintService extends PrintService {
     @Override
     public void onCreate() {
         super.onCreate();
+        PrintLog.i(TAG, "=== PrintService onCreate ===");
         NotificationChannel channel = new NotificationChannel(
                 CHANNEL_ID, "Print Jobs", NotificationManager.IMPORTANCE_LOW);
         channel.setDescription("Print job status notifications");
@@ -42,7 +43,24 @@ public class Xerox3025PrintService extends PrintService {
     }
 
     @Override
+    public int onStartCommand(android.content.Intent intent, int flags, int startId) {
+        PrintLog.i(TAG, "=== PrintService onStartCommand ===");
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
+    protected void onConnected() {
+        PrintLog.i(TAG, "=== PrintService onConnected (enabled by user) ===");
+    }
+
+    @Override
+    protected void onDisconnected() {
+        PrintLog.i(TAG, "=== PrintService onDisconnected ===");
+    }
+
+    @Override
     protected PrinterDiscoverySession onCreatePrinterDiscoverySession() {
+        PrintLog.i(TAG, "=== onCreatePrinterDiscoverySession ===");
         return new Xerox3025DiscoverySession(this);
     }
 
@@ -54,8 +72,23 @@ public class Xerox3025PrintService extends PrintService {
 
     @Override
     protected void onPrintJobQueued(PrintJob printJob) {
+        PrintLog.i(TAG, "onPrintJobQueued called: " + printJob.getInfo().getLabel());
         cancelled = false;
-        new Thread(() -> processPrintJob(printJob)).start();
+        new Thread(() -> {
+            try {
+                processPrintJob(printJob);
+            } catch (Exception e) {
+                PrintLog.e(TAG, "Uncaught exception in processPrintJob", e);
+                try {
+                    printJob.fail("Internal error: " + e.getMessage());
+                } catch (Exception ignored) {}
+                PrintJobHistory.addJob(getApplicationContext(),
+                        new PrintJobHistory.JobRecord(
+                                printJob.getInfo().getLabel(),
+                                System.currentTimeMillis(), "FAILED",
+                                "Crash: " + e.getMessage(), 0));
+            }
+        }).start();
     }
 
     private void processPrintJob(PrintJob printJob) {
@@ -66,14 +99,18 @@ public class Xerox3025PrintService extends PrintService {
 
         PrintLog.i(TAG, "Starting print job: " + jobName);
 
-        // Show ongoing notification
+        // Show ongoing notification (may silently fail if permission not granted)
         NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_printer)
                 .setContentTitle("Printing...")
                 .setContentText(jobName)
                 .setOngoing(true)
                 .setProgress(0, 0, true);
-        getSystemService(NotificationManager.class).notify(notifId, notifBuilder.build());
+        try {
+            getSystemService(NotificationManager.class).notify(notifId, notifBuilder.build());
+        } catch (Exception e) {
+            PrintLog.w(TAG, "Could not show notification: " + e.getMessage());
+        }
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String printerIp = prefs.getString("printer_ip", "192.168.0.109");
@@ -156,12 +193,14 @@ public class Xerox3025PrintService extends PrintService {
                 printJob.complete();
 
                 // Update notification
-                notifBuilder.setContentTitle("Print complete")
-                        .setContentText(jobName + " — " + pageCount + " page(s)")
-                        .setOngoing(false)
-                        .setAutoCancel(true)
-                        .setProgress(0, 0, false);
-                getSystemService(NotificationManager.class).notify(notifId, notifBuilder.build());
+                try {
+                    notifBuilder.setContentTitle("Print complete")
+                            .setContentText(jobName + " — " + pageCount + " page(s)")
+                            .setOngoing(false)
+                            .setAutoCancel(true)
+                            .setProgress(0, 0, false);
+                    getSystemService(NotificationManager.class).notify(notifId, notifBuilder.build());
+                } catch (Exception ignored) {}
 
                 // Record history
                 PrintJobHistory.addJob(this, new PrintJobHistory.JobRecord(
@@ -188,13 +227,15 @@ public class Xerox3025PrintService extends PrintService {
                           String reason, int pageCount) {
         printJob.fail(reason);
 
-        NotificationCompat.Builder notif = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_printer)
-                .setContentTitle("Print failed")
-                .setContentText(reason)
-                .setOngoing(false)
-                .setAutoCancel(true);
-        getSystemService(NotificationManager.class).notify(notifId, notif.build());
+        try {
+            NotificationCompat.Builder notif = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_printer)
+                    .setContentTitle("Print failed")
+                    .setContentText(reason)
+                    .setOngoing(false)
+                    .setAutoCancel(true);
+            getSystemService(NotificationManager.class).notify(notifId, notif.build());
+        } catch (Exception ignored) {}
 
         PrintJobHistory.addJob(this, new PrintJobHistory.JobRecord(
                 jobName, System.currentTimeMillis(), "FAILED", reason, pageCount));
@@ -233,31 +274,42 @@ public class Xerox3025PrintService extends PrintService {
 
         @Override
         public void onStartPrinterDiscovery(List<PrinterId> priorityList) {
+            PrintLog.i(TAG, "onStartPrinterDiscovery (priority list size: " + priorityList.size() + ")");
             addPrinters(buildPrinterList());
         }
 
         @Override
-        public void onStopPrinterDiscovery() {}
+        public void onStopPrinterDiscovery() {
+            PrintLog.i(TAG, "onStopPrinterDiscovery");
+        }
 
         @Override
-        public void onValidatePrinters(List<PrinterId> printerIds) {}
+        public void onValidatePrinters(List<PrinterId> printerIds) {
+            PrintLog.i(TAG, "onValidatePrinters: " + printerIds.size() + " printer(s)");
+        }
 
         @Override
         public void onStartPrinterStateTracking(PrinterId printerId) {
+            PrintLog.i(TAG, "onStartPrinterStateTracking: " + printerId);
             addPrinters(buildPrinterList());
         }
 
         @Override
-        public void onStopPrinterStateTracking(PrinterId printerId) {}
+        public void onStopPrinterStateTracking(PrinterId printerId) {
+            PrintLog.i(TAG, "onStopPrinterStateTracking");
+        }
 
         @Override
-        public void onDestroy() {}
+        public void onDestroy() {
+            PrintLog.i(TAG, "DiscoverySession onDestroy");
+        }
 
         private List<PrinterInfo> buildPrinterList() {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(
                     service.getApplicationContext());
             String ip = prefs.getString("printer_ip", "192.168.0.109");
             String displayName = prefs.getString("printer_name", "Xerox WorkCentre 3025");
+            PrintLog.i(TAG, "buildPrinterList: name=" + displayName + ", ip=" + ip);
 
             PrinterId printerId = service.generatePrinterId("xerox3025_" + ip);
 
