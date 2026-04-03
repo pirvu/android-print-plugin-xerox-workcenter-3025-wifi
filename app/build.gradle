@@ -10,8 +10,8 @@ android {
         applicationId "com.xerox3025.printplugin"
         minSdk 26
         targetSdk 34
-        versionCode 19
-        versionName "1.1"
+        versionCode Integer.parseInt(project.findProperty("VERSION_CODE") ?: "1")
+        versionName project.findProperty("VERSION_NAME") ?: "0.0.0"
     }
 
     buildTypes {

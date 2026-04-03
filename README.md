@@ -60,19 +60,23 @@ The Xerox WorkCentre 3025 only accepts **URF** (`image/urf`) and **QPDL** (`appl
 
 ## Building from source
 
-### Docker (recommended)
+### GitHub Actions (recommended)
+
+APKs are automatically built on every push to `main`. To create a release:
 
 ```bash
-./build.sh
+git tag v1.0.0
+git push --tags
 ```
 
-This builds using Docker with the Android SDK and outputs `app-debug.apk` in the project root. The script auto-increments `versionCode` on each build and uses your local `~/.android/debug.keystore` for consistent signing.
+GitHub Actions builds the APK, creates a [Release](../../releases), and attaches the APK for download. Versioning is derived from the tag — `v1.2.3` becomes versionName `1.2.3` and versionCode `10203`.
 
-### GitHub Actions
+### Local build (Docker)
 
-1. Push to GitHub
-2. Go to **Actions** tab > **Build APK** > **Run workflow**
-3. Download the APK from workflow artifacts
+```bash
+./build.sh              # dev build
+./build.sh 1.0.0 10000  # specific version
+```
 
 ## Troubleshooting
 

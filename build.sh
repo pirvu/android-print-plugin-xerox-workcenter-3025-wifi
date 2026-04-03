@@ -1,12 +1,13 @@
 #!/bin/bash
 set -e
 
-# Auto-increment versionCode before building
-GRADLE_FILE="app/build.gradle"
-CURRENT_CODE=$(grep 'versionCode' "$GRADLE_FILE" | sed 's/[^0-9]//g')
-NEW_CODE=$((CURRENT_CODE + 1))
-sed -i.bak "s/versionCode $CURRENT_CODE/versionCode $NEW_CODE/" "$GRADLE_FILE" && rm -f "${GRADLE_FILE}.bak"
-echo "Version code: $CURRENT_CODE -> $NEW_CODE"
+# Local build via Docker (for development/testing)
+# For releases, use: git tag v1.0.0 && git push --tags
+
+VERSION_NAME="${1:-dev}"
+VERSION_CODE="${2:-99999}"
+
+echo "Building version: $VERSION_NAME (code: $VERSION_CODE)"
 
 docker run --rm \
   -v "$(pwd):/project" \
@@ -17,7 +18,7 @@ docker run --rm \
     yes | sdkmanager --licenses > /dev/null 2>&1
     sdkmanager 'platforms;android-34' 'build-tools;34.0.0' > /dev/null 2>&1
     chmod +x ./gradlew
-    ./gradlew assembleDebug
+    ./gradlew assembleDebug -PVERSION_NAME=$VERSION_NAME -PVERSION_CODE=$VERSION_CODE
     cp app/build/outputs/apk/debug/app-debug.apk /project/app-debug.apk
   "
 
