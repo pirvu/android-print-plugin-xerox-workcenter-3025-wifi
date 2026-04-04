@@ -156,14 +156,15 @@ public class WsdScanClient {
 
             String response = sendSoapRequest(ip, "CreateScanJob", body);
             String jobIdStr = extractXmlValue(response, "JobId");
-            String imageUri = extractXmlValue(response, "ImageURI");
+            String jobToken = extractXmlValue(response, "JobToken");
 
-            if (jobIdStr != null && imageUri != null) {
+            if (jobIdStr != null && jobToken != null) {
                 int jobId = Integer.parseInt(jobIdStr);
-                PrintLog.i(TAG, "Scan job created: id=" + jobId + " uri=" + imageUri);
-                return new ScanJobResult(true, jobId, imageUri, null);
+                PrintLog.i(TAG, "Scan job created: id=" + jobId + " token=" + jobToken);
+                return new ScanJobResult(true, jobId, jobToken, null);
             } else {
-                String fault = extractXmlValue(response, "Reason");
+                String fault = extractXmlValue(response, "Text");
+                if (fault == null) fault = extractXmlValue(response, "Reason");
                 String error = fault != null ? fault : "Unknown error creating scan job";
                 PrintLog.e(TAG, "CreateScanJob failed: " + error);
                 return new ScanJobResult(false, -1, null, error);
@@ -338,12 +339,12 @@ public class WsdScanClient {
         // Look for a MIME boundary pattern
         String header = new String(response, 0, Math.min(response.length, 500));
 
-        if (header.contains("--MIMEBoundary") || header.contains("Content-Type: multipart")) {
+        if (header.contains("--MIMEBoundary") || header.contains("--_DPWS")
+                || header.contains("Content-Type: multipart")) {
             return extractMtomImage(response);
         }
 
         // Check for XOP include reference — image might be in a subsequent MIME part
-        // even without explicit multipart header
         if (header.contains("xop:Include")) {
             return extractMtomImage(response);
         }
@@ -371,15 +372,14 @@ public class WsdScanClient {
     }
 
     private static byte[] extractMtomImage(byte[] response) {
-        // Find the MIME boundary
+        // Find the MIME boundary (starts with --)
         String text = new String(response, 0, Math.min(response.length, 1000));
-        int boundaryIdx = text.indexOf("--MIMEBoundary");
+        int boundaryIdx = text.indexOf("--_DPWS");
+        if (boundaryIdx < 0) boundaryIdx = text.indexOf("--MIMEBoundary");
         if (boundaryIdx < 0) {
-            // Try to find any boundary marker
-            boundaryIdx = text.indexOf("\r\n--");
-            if (boundaryIdx >= 0) boundaryIdx += 2; // skip \r\n
+            boundaryIdx = text.indexOf("--");
+            if (boundaryIdx < 0) return null;
         }
-        if (boundaryIdx < 0) return null;
 
         // Find the end of the boundary line
         int lineEnd = text.indexOf("\r\n", boundaryIdx);

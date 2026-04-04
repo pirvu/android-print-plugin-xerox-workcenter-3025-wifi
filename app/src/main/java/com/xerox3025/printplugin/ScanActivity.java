@@ -134,16 +134,8 @@ public class ScanActivity extends AppCompatActivity {
 
             runOnUiThread(() -> textStatus.setText(R.string.scan_status_retrieving));
 
-            // Step 2: Retrieve image (may need a brief wait for scanner to finish)
-            try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
-
+            // Step 2: Retrieve image — this call blocks until the scanner finishes
             byte[] imageData = WsdScanClient.retrieveImage(ip, job.jobId, job.imageUri);
-
-            if (imageData == null || imageData.length == 0) {
-                // Retry once after longer wait
-                try { Thread.sleep(5000); } catch (InterruptedException ignored) {}
-                imageData = WsdScanClient.retrieveImage(ip, job.jobId, job.imageUri);
-            }
 
             byte[] finalImageData = imageData;
             runOnUiThread(() -> {
