@@ -26,6 +26,19 @@ The printer works fine from Windows and macOS (via CUPS/AirPrint).
 | Color | Monochrome only |
 | Device ID | `MFG:Xerox;CMD:SPL,URF;MDL:WorkCentre 3025` |
 
+### Scanner Capabilities (confirmed via WSD probe)
+
+| Property | Value |
+|---|---|
+| Protocol | WSD (Web Services for Devices) on port 8018 |
+| Endpoint | `http://<ip>:8018/wsd/scan` |
+| Formats | JPEG (`jfif`), TIFF (`tiff-single-uncompressed`) |
+| Resolutions | 75, 100, 150, 200, 300 DPI |
+| Color modes | Black & White, Grayscale 8-bit, RGB 24-bit |
+| Source | Flatbed platen only (no ADF) |
+| Max scan area | 8503 x 11732 (thousandths of inch, ~A4) |
+| eSCL/AirScan | Not supported (HTTP 404) |
+
 ## Technical Approach
 
 ### Print Pipeline
@@ -81,6 +94,36 @@ IPP 1.1 Print-Job request:
   [URF document data]
 ```
 
+### WSD Scan Protocol
+
+The scanner uses WSD (Web Services for Devices) via SOAP/XML on port 8018.
+
+**Key implementation detail:** The `Content-Type` header must include the `action=` parameter:
+```
+Content-Type: application/soap+xml; charset=utf-8; action="{action-uri}"
+```
+Without this, the printer returns HTTP 500. The `wsa:Action` SOAP header alone is not sufficient.
+
+**WS-Addressing namespace:** `http://schemas.xmlsoap.org/ws/2004/08/addressing` (2004 version, NOT 2005).
+
+**Scan flow:**
+1. `GetScannerElements` — query status and capabilities
+2. `CreateScanJob` — send scan settings, returns `JobId` and `JobToken`
+3. `RetrieveImage` — blocks until scan completes, returns MTOM/MIME response with JPEG data
+
+**MTOM response format:**
+```
+--_DPWS_v1.0_MimeBoundary_WSD\r\n
+Content-Type: application/xop+xml\r\n
+\r\n
+[SOAP XML envelope]\r\n
+--_DPWS_v1.0_MimeBoundary_WSD\r\n
+Content-Type: image/jpeg\r\n
+\r\n
+[JPEG binary data]
+--_DPWS_v1.0_MimeBoundary_WSD--
+```
+
 ## Project Structure
 
 ```
@@ -93,6 +136,8 @@ app/src/main/
 │   ├── SettingsActivity.java       # Config UI, network test, test page
 │   ├── IppClient.java             # IPP protocol implementation
 │   ├── UrfEncoder.java            # Bitmap→URF encoder with PWG compression
+│   ├── WsdScanClient.java         # WSD/SOAP scanner client
+│   ├── ScanActivity.java          # Scan UI with preview/save/share
 │   ├── PrintLog.java              # Ring-buffer debug logger
 │   ├── PrintJobHistory.java       # Job history persistence (SharedPreferences/JSON)
 │   └── JobHistoryActivity.java    # Job history UI (RecyclerView)
@@ -100,6 +145,7 @@ app/src/main/
     ├── drawable/ic_printer.xml
     ├── layout/
     │   ├── activity_settings.xml
+    │   ├── activity_scan.xml
     │   ├── activity_job_history.xml
     │   └── item_job_history.xml
     ├── values/
@@ -107,7 +153,8 @@ app/src/main/
     │   └── themes.xml
     └── xml/
         ├── preferences.xml
-        └── printservice.xml
+        ├── printservice.xml
+        └── file_paths.xml
 ```
 
 ## Key Components
@@ -130,12 +177,26 @@ app/src/main/
 - Sends via HTTP POST to port 631
 - Parses IPP response status codes
 
+### WsdScanClient.java
+- WSD/SOAP client for scanner operations on port 8018
+- `getScannerStatus()`: queries scanner state (Idle/Processing/Stopped)
+- `getScannerCapabilities()`: queries resolutions, color modes, formats
+- `createScanJob()`: initiates scan with settings, returns JobId + JobToken
+- `retrieveImage()`: blocks until scan completes, extracts JPEG from MTOM/MIME response
+- Handles SOAP envelope construction, WS-Addressing headers, and Content-Type action parameter
+
+### ScanActivity.java
+- Scan UI with resolution/color mode spinners, scan button, image preview
+- Save to Downloads (MediaStore on Android 10+, direct file on older)
+- Share via Android intent (FileProvider for URI permissions)
+
 ### SettingsActivity.java
 - Printer configuration (IP, display name) — persisted via SharedPreferences
 - Network connectivity test (DNS, ping, TCP 9100, IPP 631)
 - Test page printing (pre-rendered URF via IPP)
 - Print via Android Framework (opens Android print dialog with test PDF)
 - Print test suite (5 documents: invoice, grayscale, dense text, shapes, letter size)
+- Scan document (launches ScanActivity)
 - Job history viewer
 - Debug log viewer with copy/clear
 

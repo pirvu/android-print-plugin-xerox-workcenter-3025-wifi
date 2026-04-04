@@ -5,9 +5,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Android](https://img.shields.io/badge/Android-8.0%2B-green.svg)]()
 
-Print from any Android app to a Xerox WorkCentre 3025 over Wi-Fi. No cloud, no accounts, no third-party servers. Just local printing that works.
+Print and scan with a Xerox WorkCentre 3025 over Wi-Fi. No cloud, no accounts, no third-party servers. Just local printing and scanning that works.
 
-> *I built this out of pure frustration. I have a perfectly good Xerox WorkCentre 3025 sitting on my desk, it works fine from my Mac and PC, but Android? Nothing. The official Xerox app fails, Mopria says "unsupported", and Google Cloud Print is long dead. The only alternatives I found were paid apps that want full network access and god knows what else — no thanks. So I wrote my own. It talks directly to the printer over your local Wi-Fi, nothing leaves your network, and it just works. This is a working MVP — not pretty, but functional. If you have the same printer and the same frustration, this is for you.*
+> *I built this out of pure frustration. I have a perfectly good Xerox WorkCentre 3025 sitting on my desk, it works fine from my Mac and PC, but Android? Nothing. The official Xerox app fails, Mopria says "unsupported", and Google Cloud Print is long dead. The only alternatives I found were paid apps that want full network access and god knows what else — no thanks. So I wrote my own. It talks directly to the printer over your local Wi-Fi, nothing leaves your network, and it just works. Printing AND scanning. This is a working MVP — not pretty, but functional. If you have the same printer and the same frustration, this is for you.*
 
 ---
 
@@ -49,13 +49,15 @@ Open any document, photo, or web page, tap **Share** or **Print**, and select **
 ## Screenshots
 
 <p align="center">
-  <img src="docs/screenshots/main-screen.png" width="270" alt="App main screen">
-  &nbsp;&nbsp;&nbsp;
-  <img src="docs/screenshots/network-test.png" width="270" alt="Network test dialog">
+  <img src="docs/screenshots/main-screen.png" width="250" alt="App main screen">
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/scan-result.png" width="250" alt="Scan result with preview">
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/network-test.png" width="250" alt="Network test dialog">
 </p>
 
 <p align="center">
-  <em>App settings screen &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Network connectivity test</em>
+  <em>Settings &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Scanner &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Network test</em>
 </p>
 
 ---
@@ -63,6 +65,7 @@ Open any document, photo, or web page, tap **Share** or **Print**, and select **
 ## Features
 
 - **Print from any app** — documents, photos, web pages, emails — anything that supports Android's print system
+- **Scan documents** — scan from the flatbed scanner directly to your phone (JPEG, up to 300 DPI, color/grayscale/B&W)
 - **100% local** — talks directly to the printer over Wi-Fi, nothing leaves your network
 - **Network diagnostics** — test connectivity to your printer with one tap
 - **Test pages** — verify the connection works before printing real documents
@@ -70,6 +73,8 @@ Open any document, photo, or web page, tap **Share** or **Print**, and select **
 - **Notifications** — get notified when a print job completes or fails
 
 ## How it works
+
+### Printing
 
 The plugin acts as an Android Print Service. When you print from any app:
 
@@ -79,6 +84,15 @@ The plugin acts as an Android Print Service. When you print from any app:
 4. The data is sent to the printer via IPP on port 631
 
 > **Why do official apps fail?** The Xerox WorkCentre 3025 only accepts URF and QPDL formats — it doesn't support PCL, PostScript, or raw PDF that most Android print apps try to send.
+
+### Scanning
+
+The app uses the WSD (Web Services for Devices) protocol to communicate with the scanner:
+
+1. Connects to the scanner on port 8018 via SOAP/XML
+2. Creates a scan job with your chosen settings (resolution, color mode)
+3. Retrieves the scanned image as JPEG
+4. You can preview, save to Downloads, or share via any app
 
 ## Compatibility
 
@@ -99,6 +113,8 @@ The plugin acts as an Android Print Service. When you print from any app:
 | Print job fails | Open the app > **Test Network Connection** to check connectivity |
 | Nothing comes out | Open the app > **View Debug Logs** for detailed error info |
 | Wrong IP address | Check your printer's display or web interface at `http://<ip>/sws/index.html` |
+| Scan fails | Make sure the scanner lid is closed and a document is on the flatbed |
+| "No images available" | The scan job expired — try again, the scan starts immediately |
 
 > **Tip:** Give your printer a static IP in your router's DHCP settings so it doesn't change.
 
@@ -115,10 +131,12 @@ This app:
 
 This is a working MVP. Possible future additions:
 
+- [x] Scanning support
 - [ ] Better UI (Material Design)
 - [ ] Automatic printer discovery (no more typing IP addresses)
 - [ ] Duplex printing
-- [ ] Scanning support
+- [ ] Multi-page scan (ADF support if available)
+- [ ] PDF export for scans
 - [ ] Support for similar Xerox/Samsung SPL printers
 
 [Contributions welcome!](docs/CONTRIBUTING.md)
