@@ -7,7 +7,8 @@
 
 Print and scan with a Xerox WorkCentre 3025 over Wi-Fi. No cloud, no accounts, no third-party servers. Just local printing and scanning that works.
 
-EDITED: This is not going to be actively developed but I still fixed some errors app had and added a lot of languages. Will check pull requests and accept some though.
+EDITED: This is not going to be actively developed but I still fixed some errors app had and added a lot of languages. Will check pull requests and accept some though. Made building easier too.
+How to build on Windows? You need to run setup.bat first, then after its done run build.bat, I'm not sure where .apk will appear but I know the name will be app-debug.apk.
 
 > *I built this out of pure frustration. I have a perfectly good Xerox WorkCentre 3025 sitting on my desk, it works fine from my Mac and PC, but Android? Nothing. The official Xerox app fails, Mopria says "unsupported", and Google Cloud Print is long dead. The only alternatives I found were paid apps that want full network access and god knows what else — no thanks. So I wrote my own. It talks directly to the printer over your local Wi-Fi, nothing leaves your network, and it just works. Printing AND scanning. This is a working MVP — not pretty, but functional. If you have the same printer and the same frustration, this is for you.*
 
