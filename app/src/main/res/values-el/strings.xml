@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Πρόσθετο εκτύπωσης Xerox 3025</string>
+    <string name="settings_subtitle">Διαμόρφωση εκτυπωτή</string>
+
+    <string name="pref_category_printer">Ρυθμίσεις εκτυπωτή</string>
+    <string name="pref_printer_name">Εμφανιζόμενο όνομα</string>
+    <string name="pref_printer_name_summary">Όνομα που εμφανίζεται στο παράθυρο διαλόγου εκτύπωσης Android</string>
+    <string name="pref_printer_ip">Διεύθυνση IP εκτυπωτή</string>
+    <string name="pref_printer_ip_summary">Βρίσκεται στη σελίδα διαμόρφωσης του εκτυπωτή σας</string>
+
+    <string name="pref_category_diagnostics">Έλεγχος και διαγνωστικά</string>
+    <string name="pref_test_network">Έλεγχος σύνδεσης δικτύου</string>
+    <string name="pref_test_network_summary">Έλεγχος προσβασιμότητας του εκτυπωτή</string>
+    <string name="pref_print_test_page">Εκτύπωση δοκιμαστικής σελίδας</string>
+    <string name="pref_print_test_page_summary">Αποστολή δοκιμαστικής σελίδας στον εκτυπωτή</string>
+    <string name="pref_print_via_android">Εκτύπωση μέσω Android</string>
+    <string name="pref_print_via_android_summary">Δοκιμή ολόκληρης της ροής εκτύπωσης (επιλέξτε Xerox 3025 στο διάλογο)</string>
+    <string name="pref_job_history">Ιστορικό εργασιών εκτύπωσης</string>
+    <string name="pref_job_history_summary">Προβολή πρόσφατων εργασιών εκτύπωσης</string>
+    <string name="pref_view_logs">Προβολή αρχείων καταγραφής εντοπισμού σφαλμάτων</string>
+    <string name="pref_view_logs_summary">Προβολή διαγνωστικών καταγραφών της υπηρεσίας εκτύπωσης</string>
+
+    <string name="pref_run_test_suite">Εκτέλεση σουίτας δοκιμών εκτύπωσης</string>
+    <string name="pref_run_test_suite_summary">Εκτύπωση 5 δοκιμαστικών εγγράφων: τιμολόγιο, διαβαθμίσεις του γκρι, πυκνό κείμενο, σχήματα, μέγεθος Letter</string>
+
+    <string name="pref_category_instructions">Οδηγίες χρήσης</string>
+    <string name="pref_info_title">Οδηγίες ρύθμισης</string>
+    <string name="pref_info_summary">1. Ορίστε την IP του εκτυπωτή παραπάνω\n2. Μεταβείτε στις Ρυθμίσεις Android → Συνδεδεμένες συσκευές → Εκτύπωση\n3. Ενεργοποιήστε το \"Πρόσθετο εκτύπωσης Xerox 3025\"\n4. Εκτυπώστε οποιοδήποτε έγγραφο και επιλέξτε \"Xerox WorkCentre 3025\"</string>
+
+    <!-- Scan -->
+    <string name="pref_scan_document">Σάρωση εγγράφου</string>
+    <string name="pref_scan_document_summary">Σάρωση από τον επίπεδο σαρωτή</string>
+    <string name="scan_title">Σάρωση εγγράφου</string>
+    <string name="scan_button">Σάρωση</string>
+    <string name="scan_label_resolution">Ανάλυση</string>
+    <string name="scan_label_color">Χρώμα</string>
+    <string name="scan_color_grayscale">Κλίμακα του γκρι</string>
+    <string name="scan_color_rgb">Έγχρωμο</string>
+    <string name="scan_color_bw">Ασπρόμαυρο</string>
+    <string name="scan_status_ready">Ο σαρωτής είναι έτοιμος. Τοποθετήστε το έγγραφο στην επιφάνεια και πατήστε Σάρωση.</string>
+    <string name="scan_status_checking">Έλεγχος κατάστασης σαρωτή…</string>
+    <string name="scan_status_scanning">Γίνεται σάρωση… παρακαλώ περιμένετε</string>
+    <string name="scan_status_retrieving">Ανάκτηση σαρωμένης εικόνας…</string>
+    <string name="scan_status_done">Η σάρωση ολοκληρώθηκε (%d KB)</string>
+    <string name="scan_status_error">Σφάλμα σαρωτή: %s</string>
+    <string name="scan_status_busy">Ο σαρωτής είναι απασχολημένος: %s</string>
+    <string name="scan_status_decode_error">Δεν ήταν δυνατή η αποκωδικοποίηση της εικόνας</string>
+    <string name="scan_status_no_data">Δεν ελήφθησαν δεδομένα εικόνας από τον σαρωτή</string>
+    <string name="scan_preview_desc">Προεπισκόπηση σαρωμένης εικόνας</string>
+    <string name="scan_save">Αποθήκευση</string>
+    <string name="scan_share">Κοινοποίηση</string>
+    <string name="scan_share_title">Κοινοποίηση σαρωμένης εικόνας</string>
+    <string name="scan_saved">Αποθηκεύτηκε στο %s</string>
+    <string name="scan_save_failed">Η αποθήκευση απέτυχε: %s</string>
+    <string name="scan_share_failed">Η κοινοποίηση απέτυχε: %s</string>
+
+    <!-- History -->
+    <string name="job_history_title">Ιστορικό εργασιών εκτύπωσης</string>
+    <string name="clear_history">Εκκαθάριση ιστορικού</string>
+    <string name="no_print_history">Δεν υπάρχουν ακόμη εργασίες εκτύπωσης</string>
+    <string name="job_status_completed">ΟΛΟΚΛΗΡΩΘΗΚΕ</string>
+    <string name="job_status_failed">ΑΠΕΤΥΧΕ</string>
+    <string name="job_status_cancelled">ΑΚΥΡΩΘΗΚΕ</string>
+    <string name="pages_count">%d σελ.</string>
+
+    <!-- Network Test Dialog -->
+    <string name="net_test_title">Έλεγχος δικτύου</string>
+    <string name="net_test_testing">Έλεγχος σύνδεσης στο %s…</string>
+    <string name="net_test_target">Προορισμός: %s\n\n</string>
+    <string name="net_test_dns_ok">[OK] Επίλυση DNS: %1$s (%2$d ms)\n</string>
+    <string name="net_test_dns_fail">[ΣΦΑΛΜΑ] Η επίλυση DNS απέτυχε: %s\n</string>
+    <string name="net_test_ping_ok">[OK] Ping: προσβάσιμο (%d ms)\n</string>
+    <string name="net_test_ping_warn">[ΠΡΟΕΙΔΟΠΟΙΗΣΗ] Ping: καμία απόκριση ICMP (%d ms)\n</string>
+    <string name="net_test_ping_fail">[ΠΡΟΕΙΔΟΠΟΙΗΣΗ] Το ping απέτυχε: %s\n</string>
+    <string name="net_test_port9100_ok">[OK] Θύρα 9100 ανοιχτή (%d ms)\n</string>
+    <string name="net_test_port9100_warn">[ΠΡΟΕΙΔΟΠΟΙΗΣΗ] Θύρα 9100 κλειστή\n</string>
+    <string name="net_test_ipp_ok">[OK] Θύρα IPP %1$d ανοιχτή (%2$d ms)\n</string>
+    <string name="net_test_ipp_fail">[ΣΦΑΛΜΑ] Θύρα IPP %1$d κλειστή: %2$s\n</string>
+    <string name="net_test_ready">Ο εκτυπωτής είναι προσβάσιμος και έτοιμος.</string>
+    <string name="net_test_unreachable">Δεν ήταν δυνατή η πρόσβαση στον εκτυπωτή. Ελέγξτε την IP και την τροφοδοσία.</string>
+
+    <!-- Print Test Page Dialog -->
+    <string name="print_test_title">Εκτύπωση δοκιμαστικής σελίδας</string>
+    <string name="print_test_sending">Αποστολή δοκιμαστικής σελίδας στο %s…</string>
+    <string name="print_test_success">Η δοκιμαστική σελίδα στάλθηκε με επιτυχία!\n\n%1$d byte στάλθηκαν μέσω IPP στο %2$s\n\nΟ εκτυπωτής θα εκτυπώσει τη σελίδα σύντομα.</string>
+    <string name="print_test_ipp_failed">Το αίτημα IPP απέτυχε:\n%s</string>
+    <string name="print_test_failed">Η αποστολή της δοκιμαστικής σελίδας απέτυχε:\n\n%s</string>
+
+    <!-- Test Suite Dialog -->
+    <string name="test_suite_title">Σουίτα δοκιμών εκτύπωσης</string>
+    <string name="test_suite_starting">Έναρξη σουίτας δοκιμών (5 έγγραφα)…</string>
+    <string name="test_suite_progress">Δοκιμή %1$d/%2$d: %3$s</string>
+    <string name="test_suite_summary">Αποτελέσματα: %1$d επιτυχείς, %2$d ανεπιτυχείς\n\n%3$s</string>
+
+    <!-- Log Viewer -->
+    <string name="logs_title">Αρχεία καταγραφής</string>
+    <string name="logs_empty">(δεν υπάρχουν εγγραφές)</string>
+    <string name="logs_copied">Οι καταγραφές αντιγράφηκαν</string>
+    <string name="logs_cleared">Οι καταγραφές εκκαθαρίστηκαν</string>
+
+    <!-- Common Dialog Actions -->
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_close">Κλείσιμο</string>
+    <string name="dialog_copy">Αντιγραφή</string>
+    <string name="dialog_clear">Εκκαθάριση</string>
+
+    <!-- Notifications & Print Service -->
+    <string name="notif_channel_name">Εργασίες εκτύπωσης</string>
+    <string name="notif_channel_desc">Ειδοποιήσεις κατάστασης εργασιών εκτύπωσης</string>
+    <string name="notif_printing_title">Γίνεται εκτύπωση…</string>
+    <string name="notif_print_complete_title">Η εκτύπωση ολοκληρώθηκε</string>
+    <string name="notif_print_failed_title">Η εκτύπωση απέτυχε</string>
+    <string name="print_error_no_doc">Δεν υπάρχουν διαθέσιμα δεδομένα εγγράφου</string>
+    <string name="print_error_cancelled">Ακυρώθηκε από τον χρήστη</string>
+    <string name="print_error_oom">Το έγγραφο είναι πολύ μεγάλο για απόδοση σε 600 DPI</string>
+    <string name="print_error_could_not_print">Δεν ήταν δυνατή η εκτύπωση στο %1$s — %2$s</string>
+</resources>

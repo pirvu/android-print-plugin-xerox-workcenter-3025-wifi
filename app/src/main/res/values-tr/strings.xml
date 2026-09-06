@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Xerox 3025 Yazdırma Eklentisi</string>
+    <string name="settings_subtitle">Yazıcı yapılandırması</string>
+
+    <string name="pref_category_printer">Yazıcı Ayarları</string>
+    <string name="pref_printer_name">Görünen Ad</string>
+    <string name="pref_printer_name_summary">Android yazdırma penceresinde gösterilen ad</string>
+    <string name="pref_printer_ip">Yazıcı IP Adresi</string>
+    <string name="pref_printer_ip_summary">Bunu yazıcınızın yapılandırma sayfasında bulabilirsiniz</string>
+
+    <string name="pref_category_diagnostics">Test ve Tanılama</string>
+    <string name="pref_test_network">Ağ Bağlantısını Test Et</string>
+    <string name="pref_test_network_summary">Yazıcının erişilebilir olup olmadığını kontrol et</string>
+    <string name="pref_print_test_page">Sınama Sayfası Yazdır</string>
+    <string name="pref_print_test_page_summary">Yazıcıya bir sınama sayfası gönder</string>
+    <string name="pref_print_via_android">Android ile Yazdır</string>
+    <string name="pref_print_via_android_summary">Tüm yazdırma sürecini test et (iletişim kutusunda Xerox 3025\'i seçin)</string>
+    <string name="pref_job_history">Yazdırma Geçmişi</string>
+    <string name="pref_job_history_summary">Son yazdırma işlerini görüntüle</string>
+    <string name="pref_view_logs">Hata Ayıklama Günlüklerini Görüntüle</string>
+    <string name="pref_view_logs_summary">Yazdırma hizmeti tanılama günlüklerini görüntüle</string>
+
+    <string name="pref_run_test_suite">Yazdırma Test Paketini Çalıştır</string>
+    <string name="pref_run_test_suite_summary">5 test belgesi yazdır: fatura, gri tonlama, yoğun metin, şekiller, Letter boyutu</string>
+
+    <string name="pref_category_instructions">Kullanım</string>
+    <string name="pref_info_title">Kurulum Talimatları</string>
+    <string name="pref_info_summary">1. Yukarıdan yazıcı IP adresini ayarlayın\n2. Android Ayarları → Bağlı cihazlar → Yazdırma bölümüne gidin\n3. \"Xerox 3025 Yazdırma Eklentisi\"ni etkinleştirin\n4. Herhangi bir belgeyi yazdırın ve \"Xerox WorkCentre 3025\"i seçin</string>
+
+    <!-- Scan -->
+    <string name="pref_scan_document">Belge Tara</string>
+    <string name="pref_scan_document_summary">Düz yataklı tarayıcıdan tara</string>
+    <string name="scan_title">Belge Tara</string>
+    <string name="scan_button">Tara</string>
+    <string name="scan_label_resolution">Çözünürlük</string>
+    <string name="scan_label_color">Renk</string>
+    <string name="scan_color_grayscale">Gri tonlama</string>
+    <string name="scan_color_rgb">Renkli</string>
+    <string name="scan_color_bw">Siyah Beyaz</string>
+    <string name="scan_status_ready">Tarayıcı hazır. Belgeyi camın üzerine yerleştirin ve Tara\'ya dokunun.</string>
+    <string name="scan_status_checking">Tarayıcı durumu kontrol ediliyor…</string>
+    <string name="scan_status_scanning">Taranıyor… lütfen bekleyin</string>
+    <string name="scan_status_retrieving">Taranan görüntü alınıyor…</string>
+    <string name="scan_status_done">Tarama tamamlandı (%d KB)</string>
+    <string name="scan_status_error">Tarayıcı hatası: %s</string>
+    <string name="scan_status_busy">Tarayıcı meşgul: %s</string>
+    <string name="scan_status_decode_error">Taranan görüntü kodu çözülemedi</string>
+    <string name="scan_status_no_data">Tarayıcıdan görüntü verisi alınamadı</string>
+    <string name="scan_preview_desc">Taranan görüntü önizlemesi</string>
+    <string name="scan_save">Kaydet</string>
+    <string name="scan_share">Paylaş</string>
+    <string name="scan_share_title">Taranan görüntüyü paylaş</string>
+    <string name="scan_saved">%s konumuna kaydedildi</string>
+    <string name="scan_save_failed">Kaydetme başarısız: %s</string>
+    <string name="scan_share_failed">Paylaşma başarısız: %s</string>
+
+    <!-- History -->
+    <string name="job_history_title">Yazdırma Geçmişi</string>
+    <string name="clear_history">Geçmişi Temizle</string>
+    <string name="no_print_history">Henüz yazdırma işi yok</string>
+    <string name="job_status_completed">TAMAMLANDI</string>
+    <string name="job_status_failed">BAŞARISIZ</string>
+    <string name="job_status_cancelled">İPTAL EDİLDİ</string>
+    <string name="pages_count">%d sayfa</string>
+
+    <!-- Network Test Dialog -->
+    <string name="net_test_title">Ağ Testi</string>
+    <string name="net_test_testing">%s ile bağlantı test ediliyor…</string>
+    <string name="net_test_target">Hedef: %s\n\n</string>
+    <string name="net_test_dns_ok">[OK] DNS çözümlendi: %1$s (%2$d ms)\n</string>
+    <string name="net_test_dns_fail">[HATA] DNS çözümleme başarısız: %s\n</string>
+    <string name="net_test_ping_ok">[OK] Ping: erişilebilir (%d ms)\n</string>
+    <string name="net_test_ping_warn">[UYARI] Ping: ICMP yanıtı yok (%d ms)\n</string>
+    <string name="net_test_ping_fail">[UYARI] Ping başarısız: %s\n</string>
+    <string name="net_test_port9100_ok">[OK] 9100 bağlantı noktası açık (%d ms)\n</string>
+    <string name="net_test_port9100_warn">[UYARI] 9100 bağlantı noktası kapalı\n</string>
+    <string name="net_test_ipp_ok">[OK] IPP bağlantı noktası %1$d açık (%2$d ms)\n</string>
+    <string name="net_test_ipp_fail">[HATA] IPP bağlantı noktası %1$d kapalı: %2$s\n</string>
+    <string name="net_test_ready">Yazıcı erişilebilir ve hazır durumda.</string>
+    <string name="net_test_unreachable">Yazıcıya ulaşılamadı. IP adresini ve yazıcının açık olduğunu kontrol edin.</string>
+
+    <!-- Print Test Page Dialog -->
+    <string name="print_test_title">Sınama Sayfası Yazdır</string>
+    <string name="print_test_sending">Sınama sayfası %s adresine gönderiliyor…</string>
+    <string name="print_test_success">Sınama sayfası başarıyla gönderildi!\n\nIPP ile %2$s adresine %1$d bayt iletildi\n\nYazıcı kısa süre içinde sayfayı yazdıracaktır.</string>
+    <string name="print_test_ipp_failed">IPP isteği başarısız oldu:\n%s</string>
+    <string name="print_test_failed">Sınama sayfası gönderilemedi:\n\n%s</string>
+
+    <!-- Test Suite Dialog -->
+    <string name="test_suite_title">Yazdırma Test Paketi</string>
+    <string name="test_suite_starting">Test paketi başlatılıyor (5 belge)…</string>
+    <string name="test_suite_progress">Test %1$d/%2$d: %3$s</string>
+    <string name="test_suite_summary">Sonuçlar: %1$d başarılı, %2$d başarısız\n\n%3$s</string>
+
+    <!-- Log Viewer -->
+    <string name="logs_title">Hata Ayıklama Günlükleri</string>
+    <string name="logs_empty">(günlük kaydı yok)</string>
+    <string name="logs_copied">Günlükler kopyalandı</string>
+    <string name="logs_cleared">Günlükler temizlendi</string>
+
+    <!-- Common Dialog Actions -->
+    <string name="dialog_ok">Tamam</string>
+    <string name="dialog_close">Kapat</string>
+    <string name="dialog_copy">Kopyala</string>
+    <string name="dialog_clear">Temizle</string>
+
+    <!-- Notifications & Print Service -->
+    <string name="notif_channel_name">Yazdırma İşleri</string>
+    <string name="notif_channel_desc">Yazdırma işi durum bildirimleri</string>
+    <string name="notif_printing_title">Yazdırılıyor…</string>
+    <string name="notif_print_complete_title">Yazdırma tamamlandı</string>
+    <string name="notif_print_failed_title">Yazdırma başarısız</string>
+    <string name="print_error_no_doc">Kullanılabilir belge verisi yok</string>
+    <string name="print_error_cancelled">Kullanıcı tarafından iptal edildi</string>
+    <string name="print_error_oom">Belge 600 DPI çözünürlükte işlenemeyecek kadar büyük</string>
+    <string name="print_error_could_not_print">%1$s üzerinde yazdırılamadı — %2$s</string>
+</resources>

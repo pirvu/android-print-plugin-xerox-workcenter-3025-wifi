@@ -27,7 +27,7 @@ public class JobHistoryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_job_history);
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Print Job History");
+            getSupportActionBar().setTitle(R.string.job_history_title);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
@@ -52,7 +52,7 @@ public class JobHistoryActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, 1, 0, "Clear History");
+        menu.add(0, 1, 0, R.string.clear_history);
         return true;
     }
 
@@ -89,21 +89,25 @@ public class JobHistoryActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             PrintJobHistory.JobRecord job = jobs.get(position);
             holder.name.setText(job.jobName);
-            holder.time.setText(job.getFormattedTime()
-                    + (job.pageCount > 0 ? " — " + job.pageCount + " page(s)" : ""));
-            holder.status.setText(job.status);
+            String pageStr = job.pageCount > 0
+                    ? " — " + holder.itemView.getContext().getString(R.string.pages_count, job.pageCount)
+                    : "";
+            holder.time.setText(job.getFormattedTime() + pageStr);
 
-            switch (job.status) {
-                case "COMPLETED":
-                    holder.status.setTextColor(Color.parseColor("#2E7D32"));
-                    break;
-                case "FAILED":
-                    holder.status.setTextColor(Color.parseColor("#C62828"));
-                    break;
-                default:
-                    holder.status.setTextColor(Color.parseColor("#F57F17"));
-                    break;
+            String displayStatus = job.status;
+            if ("COMPLETED".equals(job.status)) {
+                displayStatus = holder.itemView.getContext().getString(R.string.job_status_completed);
+                holder.status.setTextColor(Color.parseColor("#2E7D32"));
+            } else if ("FAILED".equals(job.status)) {
+                displayStatus = holder.itemView.getContext().getString(R.string.job_status_failed);
+                holder.status.setTextColor(Color.parseColor("#C62828"));
+            } else if ("CANCELLED".equals(job.status)) {
+                displayStatus = holder.itemView.getContext().getString(R.string.job_status_cancelled);
+                holder.status.setTextColor(Color.parseColor("#F57F17"));
+            } else {
+                holder.status.setTextColor(Color.parseColor("#F57F17"));
             }
+            holder.status.setText(displayStatus);
 
             if (job.detail != null && !job.detail.isEmpty()) {
                 holder.detail.setText(job.detail);

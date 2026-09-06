@@ -9,6 +9,9 @@
     <string name="pref_printer_ip">Printer IP Address</string>
     <string name="pref_printer_ip_summary">Find this on your printer\'s config page</string>
 
+    <string name="pref_discover_printers">Discover Printers</string>
+    <string name="pref_discover_printers_summary">Search the local network for printers</string>
+
     <string name="pref_category_diagnostics">Test &amp; Diagnostics</string>
     <string name="pref_test_network">Test Network Connection</string>
     <string name="pref_test_network_summary">Check if the printer is reachable</string>
@@ -26,15 +29,18 @@
 
     <string name="pref_category_instructions">How to use</string>
     <string name="pref_info_title">Setup Instructions</string>
-    <string name="pref_info_summary">1. Set the printer IP above\n2. Go to Android Settings → Connected devices → Printing\n3. Enable \"Xerox 3025 Print Plugin\"\n4. Print any document and select \"Xerox WorkCentre 3025\"</string>
-
-    <string name="no_print_history">No print jobs yet</string>
+    <string name="pref_info_summary">1. Tap "Discover Printers" above, or set the printer IP manually\n2. Go to Android Settings → Connected devices → Printing\n3. Enable \"Xerox 3025 Print Plugin\"\n4. Print any document and select \"Xerox WorkCentre 3025\"</string>
 
     <!-- Scan -->
     <string name="pref_scan_document">Scan Document</string>
     <string name="pref_scan_document_summary">Scan from the flatbed scanner</string>
     <string name="scan_title">Scan Document</string>
     <string name="scan_button">Scan</string>
+    <string name="scan_label_resolution">Resolution</string>
+    <string name="scan_label_color">Color</string>
+    <string name="scan_color_grayscale">Grayscale</string>
+    <string name="scan_color_rgb">Color</string>
+    <string name="scan_color_bw">Black &amp; White</string>
     <string name="scan_status_ready">Scanner ready. Place a document on the flatbed and tap Scan.</string>
     <string name="scan_status_checking">Checking scanner status…</string>
     <string name="scan_status_scanning">Scanning… please wait</string>
@@ -49,4 +55,79 @@
     <string name="scan_share">Share</string>
     <string name="scan_share_title">Share scanned image</string>
     <string name="scan_saved">Saved to %s</string>
+    <string name="scan_save_failed">Save failed: %s</string>
+    <string name="scan_share_failed">Share failed: %s</string>
+    <string name="scan_export_pdf">PDF</string>
+    <string name="scan_pdf_saved">PDF saved to %s</string>
+    <string name="scan_pdf_failed">PDF export failed: %s</string>
+
+    <!-- History -->
+    <string name="job_history_title">Print Job History</string>
+    <string name="clear_history">Clear History</string>
+    <string name="no_print_history">No print jobs yet</string>
+    <string name="job_status_completed">COMPLETED</string>
+    <string name="job_status_failed">FAILED</string>
+    <string name="job_status_cancelled">CANCELLED</string>
+    <string name="pages_count">%d page(s)</string>
+
+    <!-- Network Test Dialog -->
+    <string name="net_test_title">Network Test</string>
+    <string name="net_test_testing">Testing connection to %s…</string>
+    <string name="net_test_target">Target: %s\n\n</string>
+    <string name="net_test_dns_ok">[OK] DNS resolved: %1$s (%2$d ms)\n</string>
+    <string name="net_test_dns_fail">[FAIL] DNS resolution failed: %s\n</string>
+    <string name="net_test_ping_ok">[OK] Ping: reachable (%d ms)\n</string>
+    <string name="net_test_ping_warn">[WARN] Ping: no ICMP reply (%d ms)\n</string>
+    <string name="net_test_ping_fail">[WARN] Ping failed: %s\n</string>
+    <string name="net_test_port9100_ok">[OK] Port 9100 open (%d ms)\n</string>
+    <string name="net_test_port9100_warn">[WARN] Port 9100 closed\n</string>
+    <string name="net_test_ipp_ok">[OK] IPP port %1$d open (%2$d ms)\n</string>
+    <string name="net_test_ipp_fail">[FAIL] IPP port %1$d closed: %2$s\n</string>
+    <string name="net_test_ready">Printer is reachable and ready.</string>
+    <string name="net_test_unreachable">Could not reach printer. Check IP and that the printer is on.</string>
+
+    <!-- Print Test Page Dialog -->
+    <string name="print_test_title">Print Test Page</string>
+    <string name="print_test_sending">Sending test page to %s…</string>
+    <string name="print_test_success">Test page sent successfully!\n\n%1$d bytes sent via IPP to %2$s\n\nThe printer should produce a page shortly.</string>
+    <string name="print_test_ipp_failed">IPP request failed:\n%s</string>
+    <string name="print_test_failed">Failed to send test page:\n\n%s</string>
+
+    <!-- Test Suite Dialog -->
+    <string name="test_suite_title">Print Test Suite</string>
+    <string name="test_suite_starting">Starting test suite (5 documents)…</string>
+    <string name="test_suite_progress">Test %1$d/%2$d: %3$s</string>
+    <string name="test_suite_summary">Results: %1$d passed, %2$d failed\n\n%3$s</string>
+
+    <!-- Log Viewer -->
+    <string name="logs_title">Debug Logs</string>
+    <string name="logs_empty">(no log entries)</string>
+    <string name="logs_copied">Logs copied</string>
+    <string name="logs_cleared">Logs cleared</string>
+
+    <!-- Common Dialog Actions -->
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_close">Close</string>
+    <string name="dialog_copy">Copy</string>
+    <string name="dialog_clear">Clear</string>
+
+    <!-- Notifications & Print Service -->
+    <string name="notif_channel_name">Print Jobs</string>
+    <string name="notif_channel_desc">Print job status notifications</string>
+    <string name="notif_printing_title">Printing…</string>
+    <string name="notif_print_complete_title">Print complete</string>
+    <string name="notif_print_failed_title">Print failed</string>
+    <string name="print_error_no_doc">No document data available</string>
+    <string name="print_error_cancelled">Cancelled by user</string>
+    <string name="print_error_oom">Document too large to render at 600 DPI</string>
+    <string name="print_error_could_not_print">Could not print to %1$s — %2$s</string>
+
+    <!-- Printer Discovery -->
+    <string name="discover_title">Discover Printers</string>
+    <string name="discover_scanning">Scanning the local network for printers…</string>
+    <string name="discover_no_printers">No printers found on the network.\n\nMake sure your printer is powered on and connected to the same Wi-Fi network.</string>
+    <string name="discover_select">Select a printer</string>
+    <string name="discover_configured">%s has been configured</string>
+    <string name="discover_failed">Discovery failed: %s</string>
+    <string name="dialog_cancel">Cancel</string>
 </resources>

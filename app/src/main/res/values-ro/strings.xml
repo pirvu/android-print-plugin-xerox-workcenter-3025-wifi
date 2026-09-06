@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Modul de imprimare Xerox 3025</string>
+    <string name="settings_subtitle">Configurarea imprimantei</string>
+
+    <string name="pref_category_printer">Setări imprimantă</string>
+    <string name="pref_printer_name">Nume afișat</string>
+    <string name="pref_printer_name_summary">Numele afișat în dialogul de imprimare Android</string>
+    <string name="pref_printer_ip">Adresă IP imprimantă</string>
+    <string name="pref_printer_ip_summary">O găsiți pe pagina de configurare a imprimantei</string>
+
+    <string name="pref_category_diagnostics">Testare și diagnosticare</string>
+    <string name="pref_test_network">Testează conexiunea de rețea</string>
+    <string name="pref_test_network_summary">Verifică dacă imprimanta este accesibilă</string>
+    <string name="pref_print_test_page">Imprimă pagina de test</string>
+    <string name="pref_print_test_page_summary">Trimite o pagină de test la imprimantă</string>
+    <string name="pref_print_via_android">Imprimare prin sistemul Android</string>
+    <string name="pref_print_via_android_summary">Testează întregul flux de imprimare (selectați Xerox 3025 în dialog)</string>
+    <string name="pref_job_history">Istoric lucrări de imprimare</string>
+    <string name="pref_job_history_summary">Vizualizează lucrările recente de imprimare</string>
+    <string name="pref_view_logs">Vizualizează jurnalele de depanare</string>
+    <string name="pref_view_logs_summary">Vizualizează jurnalele de diagnosticare ale serviciului de imprimare</string>
+
+    <string name="pref_run_test_suite">Rulează suita de teste de imprimare</string>
+    <string name="pref_run_test_suite_summary">Imprimă 5 documente de test: factură, tonuri de gri, text dens, forme, format Letter</string>
+
+    <string name="pref_category_instructions">Instrucțiuni</string>
+    <string name="pref_info_title">Instrucțiuni de configurare</string>
+    <string name="pref_info_summary">1. Setați IP-ul imprimantei mai sus\n2. Accesați Setări Android → Dispozitive conectate → Imprimare\n3. Activați „Modul de imprimare Xerox 3025”\n4. Imprimați orice document și selectați „Xerox WorkCentre 3025”</string>
+
+    <!-- Scan -->
+    <string name="pref_scan_document">Scanează document</string>
+    <string name="pref_scan_document_summary">Scanează de pe scanerul plat</string>
+    <string name="scan_title">Scanează document</string>
+    <string name="scan_button">Scanează</string>
+    <string name="scan_label_resolution">Rezoluție</string>
+    <string name="scan_label_color">Culoare</string>
+    <string name="scan_color_grayscale">Tonuri de gri</string>
+    <string name="scan_color_rgb">Color</string>
+    <string name="scan_color_bw">Alb-negru</string>
+    <string name="scan_status_ready">Scaner pregătit. Așezați documentul pe sticlă și apăsați Scanează.</string>
+    <string name="scan_status_checking">Se verifică starea scanerului…</string>
+    <string name="scan_status_scanning">Se scanează… vă rugăm așteptați</string>
+    <string name="scan_status_retrieving">Se preia imaginea scanată…</string>
+    <string name="scan_status_done">Scanare finalizată (%d KB)</string>
+    <string name="scan_status_error">Eroare scaner: %s</string>
+    <string name="scan_status_busy">Scaner ocupat: %s</string>
+    <string name="scan_status_decode_error">Imaginea scanată nu a putut fi decodificată</string>
+    <string name="scan_status_no_data">Nu s-au primit date de imagine de la scaner</string>
+    <string name="scan_preview_desc">Previzualizarea imaginii scanate</string>
+    <string name="scan_save">Salvează</string>
+    <string name="scan_share">Distribuie</string>
+    <string name="scan_share_title">Distribuie imaginea scanată</string>
+    <string name="scan_saved">Salvat în %s</string>
+    <string name="scan_save_failed">Salvarea a eșuat: %s</string>
+    <string name="scan_share_failed">Distribuirea a eșuat: %s</string>
+
+    <!-- History -->
+    <string name="job_history_title">Istoric lucrări de imprimare</string>
+    <string name="clear_history">Șterge istoricul</string>
+    <string name="no_print_history">Nicio lucrare de imprimare până acum</string>
+    <string name="job_status_completed">FINALIZAT</string>
+    <string name="job_status_failed">EȘUAT</string>
+    <string name="job_status_cancelled">ANULAT</string>
+    <string name="pages_count">%d pag.</string>
+
+    <!-- Network Test Dialog -->
+    <string name="net_test_title">Test de rețea</string>
+    <string name="net_test_testing">Se testează conexiunea la %s…</string>
+    <string name="net_test_target">Țintă: %s\n\n</string>
+    <string name="net_test_dns_ok">[OK] DNS rezolvat: %1$s (%2$d ms)\n</string>
+    <string name="net_test_dns_fail">[EROARE] Rezolvarea DNS a eșuat: %s\n</string>
+    <string name="net_test_ping_ok">[OK] Ping: accesibil (%d ms)\n</string>
+    <string name="net_test_ping_warn">[AVERTISMENT] Ping: fără răspuns ICMP (%d ms)\n</string>
+    <string name="net_test_ping_fail">[AVERTISMENT] Ping eșuat: %s\n</string>
+    <string name="net_test_port9100_ok">[OK] Portul 9100 deschis (%d ms)\n</string>
+    <string name="net_test_port9100_warn">[AVERTISMENT] Portul 9100 închis\n</string>
+    <string name="net_test_ipp_ok">[OK] Portul IPP %1$d deschis (%2$d ms)\n</string>
+    <string name="net_test_ipp_fail">[EROARE] Portul IPP %1$d închis: %2$s\n</string>
+    <string name="net_test_ready">Imprimanta este accesibilă și pregătită.</string>
+    <string name="net_test_unreachable">Imprimanta nu a putut fi contactată. Verificați IP-ul și dacă este pornită.</string>
+
+    <!-- Print Test Page Dialog -->
+    <string name="print_test_title">Imprimă pagina de test</string>
+    <string name="print_test_sending">Se trimite pagina de test către %s…</string>
+    <string name="print_test_success">Pagina de test a fost trimisă cu succes!\n\n%1$d octeți transmiși prin IPP către %2$s\n\nImprimanta va tipări pagina în scurt timp.</string>
+    <string name="print_test_ipp_failed">Cererea IPP a eșuat:\n%s</string>
+    <string name="print_test_failed">Trimiterea paginii de test a eșuat:\n\n%s</string>
+
+    <!-- Test Suite Dialog -->
+    <string name="test_suite_title">Suită de teste de imprimare</string>
+    <string name="test_suite_starting">Se pornește suita de teste (5 documente)…</string>
+    <string name="test_suite_progress">Test %1$d/%2$d: %3$s</string>
+    <string name="test_suite_summary">Rezultate: %1$d reușite, %2$d eșuate\n\n%3$s</string>
+
+    <!-- Log Viewer -->
+    <string name="logs_title">Jurnale de depanare</string>
+    <string name="logs_empty">(niciun jurnal)</string>
+    <string name="logs_copied">Jurnale copiate</string>
+    <string name="logs_cleared">Jurnale șterse</string>
+
+    <!-- Common Dialog Actions -->
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_close">Închide</string>
+    <string name="dialog_copy">Copiază</string>
+    <string name="dialog_clear">Șterge</string>
+
+    <!-- Notifications & Print Service -->
+    <string name="notif_channel_name">Lucrări de imprimare</string>
+    <string name="notif_channel_desc">Notificări privind starea lucrărilor de imprimare</string>
+    <string name="notif_printing_title">Se imprimă…</string>
+    <string name="notif_print_complete_title">Imprimare finalizată</string>
+    <string name="notif_print_failed_title">Imprimarea a eșuat</string>
+    <string name="print_error_no_doc">Nu sunt disponibile date despre document</string>
+    <string name="print_error_cancelled">Anulat de utilizator</string>
+    <string name="print_error_oom">Documentul este prea mare pentru a fi redat la 600 DPI</string>
+    <string name="print_error_could_not_print">Nu s-a putut imprima pe %1$s — %2$s</string>
+</resources>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tiskový modul Xerox 3025</string>
+    <string name="settings_subtitle">Konfigurace tiskárny</string>
+
+    <string name="pref_category_printer">Nastavení tiskárny</string>
+    <string name="pref_printer_name">Zobrazovaný název</string>
+    <string name="pref_printer_name_summary">Název zobrazený v dialogovém okně tisku Android</string>
+    <string name="pref_printer_ip">IP adresa tiskárny</string>
+    <string name="pref_printer_ip_summary">Najdete ji na konfigurační stránce tiskárny</string>
+
+    <string name="pref_category_diagnostics">Testování a diagnostika</string>
+    <string name="pref_test_network">Testovat síťové připojení</string>
+    <string name="pref_test_network_summary">Zkontrolovat dostupnost tiskárny</string>
+    <string name="pref_print_test_page">Vytisknout zkušební stránku</string>
+    <string name="pref_print_test_page_summary">Odeslat zkušební stránku do tiskárny</string>
+    <string name="pref_print_via_android">Tisk přes systém Android</string>
+    <string name="pref_print_via_android_summary">Otestovat celý proces tisku (v dialogu vyberte Xerox 3025)</string>
+    <string name="pref_job_history">Historie tiskových úloh</string>
+    <string name="pref_job_history_summary">Zobrazit nedávné tiskové úlohy</string>
+    <string name="pref_view_logs">Zobrazit protokoly ladění</string>
+    <string name="pref_view_logs_summary">Zobrazit diagnostické protokoly tiskové služby</string>
+
+    <string name="pref_run_test_suite">Spustit sadu tiskových testů</string>
+    <string name="pref_run_test_suite_summary">Vytisknout 5 testovacích dokumentů: faktura, odstíny šedi, hustý text, tvary, formát Letter</string>
+
+    <string name="pref_category_instructions">Návod</string>
+    <string name="pref_info_title">Pokyny k nastavení</string>
+    <string name="pref_info_summary">1. Nastavte IP adresu tiskárny výše\n2. Přejděte do Nastavení Android → Připojená zařízení → Tisk\n3. Povolte \"Tiskový modul Xerox 3025\"\n4. Vytiskněte libovolný dokument a vyberte \"Xerox WorkCentre 3025\"</string>
+
+    <!-- Scan -->
+    <string name="pref_scan_document">Skenovat dokument</string>
+    <string name="pref_scan_document_summary">Skenovat z plochého skeneru</string>
+    <string name="scan_title">Skenovat dokument</string>
+    <string name="scan_button">Skenovat</string>
+    <string name="scan_label_resolution">Rozlišení</string>
+    <string name="scan_label_color">Barva</string>
+    <string name="scan_color_grayscale">Odstíny šedi</string>
+    <string name="scan_color_rgb">Barevně</string>
+    <string name="scan_color_bw">Černobíle</string>
+    <string name="scan_status_ready">Skener je připraven. Vložte dokument na sklo a klepněte na Skenovat.</string>
+    <string name="scan_status_checking">Kontrola stavu skeneru…</string>
+    <string name="scan_status_scanning">Skenování… prosím čekejte</string>
+    <string name="scan_status_retrieving">Načítání naskenovaného obrázku…</string>
+    <string name="scan_status_done">Skenování dokončeno (%d KB)</string>
+    <string name="scan_status_error">Chyba skeneru: %s</string>
+    <string name="scan_status_busy">Skener je zaneprázdněn: %s</string>
+    <string name="scan_status_decode_error">Naskenovaný obrázek nelze dekódovat</string>
+    <string name="scan_status_no_data">Ze skeneru nebyla přijata žádná obrazová data</string>
+    <string name="scan_preview_desc">Náhled naskenovaného obrázku</string>
+    <string name="scan_save">Uložit</string>
+    <string name="scan_share">Sdílet</string>
+    <string name="scan_share_title">Sdílet naskenovaný obrázek</string>
+    <string name="scan_saved">Uloženo do %s</string>
+    <string name="scan_save_failed">Uložení se nezdařilo: %s</string>
+    <string name="scan_share_failed">Sdílení se nezdařilo: %s</string>
+
+    <!-- History -->
+    <string name="job_history_title">Historie tiskových úloh</string>
+    <string name="clear_history">Vymazat historii</string>
+    <string name="no_print_history">Zatím žádné tiskové úlohy</string>
+    <string name="job_status_completed">DOKONČENO</string>
+    <string name="job_status_failed">NEZDAŘILO SE</string>
+    <string name="job_status_cancelled">ZRUŠENO</string>
+    <string name="pages_count">%d str.</string>
+
+    <!-- Network Test Dialog -->
+    <string name="net_test_title">Test sítě</string>
+    <string name="net_test_testing">Testování připojení k %s…</string>
+    <string name="net_test_target">Cíl: %s\n\n</string>
+    <string name="net_test_dns_ok">[OK] DNS přeloženo: %1$s (%2$d ms)\n</string>
+    <string name="net_test_dns_fail">[CHYBA] Překlad DNS se nezdařil: %s\n</string>
+    <string name="net_test_ping_ok">[OK] Ping: dostupný (%d ms)\n</string>
+    <string name="net_test_ping_warn">[VAROVÁNÍ] Ping: žádná odpověď ICMP (%d ms)\n</string>
+    <string name="net_test_ping_fail">[VAROVÁNÍ] Chyba pingu: %s\n</string>
+    <string name="net_test_port9100_ok">[OK] Port 9100 otevřen (%d ms)\n</string>
+    <string name="net_test_port9100_warn">[VAROVÁNÍ] Port 9100 uzavřen\n</string>
+    <string name="net_test_ipp_ok">[OK] Port IPP %1$d otevřen (%2$d ms)\n</string>
+    <string name="net_test_ipp_fail">[CHYBA] Port IPP %1$d uzavřen: %2$s\n</string>
+    <string name="net_test_ready">Tiskárna je dostupná a připravena.</string>
+    <string name="net_test_unreachable">K tiskárně se nelze připojit. Zkontrolujte IP adresu a napájení.</string>
+
+    <!-- Print Test Page Dialog -->
+    <string name="print_test_title">Vytisknout zkušební stránku</string>
+    <string name="print_test_sending">Odesílání zkušební stránky do %s…</string>
+    <string name="print_test_success">Zkušební stránka byla úspěšně odeslána!\n\nPřeneseno %1$d bajtů přes IPP do %2$s\n\nTiskárna by měla stránku brzy vytisknout.</string>
+    <string name="print_test_ipp_failed">Požadavek IPP se nezdařil:\n%s</string>
+    <string name="print_test_failed">Nepodařilo se odeslat zkušební stránku:\n\n%s</string>
+
+    <!-- Test Suite Dialog -->
+    <string name="test_suite_title">Sada tiskových testů</string>
+    <string name="test_suite_starting">Spouštění sady testů (5 dokumentů)…</string>
+    <string name="test_suite_progress">Test %1$d/%2$d: %3$s</string>
+    <string name="test_suite_summary">Výsledky: %1$d úspěšných, %2$d neúspěšných\n\n%3$s</string>
+
+    <!-- Log Viewer -->
+    <string name="logs_title">Protokoly ladění</string>
+    <string name="logs_empty">(žádné záznamy v protokolu)</string>
+    <string name="logs_copied">Protokoly zkopírovány</string>
+    <string name="logs_cleared">Protokoly vymazány</string>
+
+    <!-- Common Dialog Actions -->
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_close">Zavřít</string>
+    <string name="dialog_copy">Kopírovat</string>
+    <string name="dialog_clear">Vymazat</string>
+
+    <!-- Notifications & Print Service -->
+    <string name="notif_channel_name">Tiskové úlohy</string>
+    <string name="notif_channel_desc">Oznámení o stavu tiskových úloh</string>
+    <string name="notif_printing_title">Probíhá tisk…</string>
+    <string name="notif_print_complete_title">Tisk dokončen</string>
+    <string name="notif_print_failed_title">Tisk se nezdařil</string>
+    <string name="print_error_no_doc">Nejsou k dispozici žádná data dokumentu</string>
+    <string name="print_error_cancelled">Zrušeno uživatelem</string>
+    <string name="print_error_oom">Dokument je příliš velký pro vykreslení při 600 DPI</string>
+    <string name="print_error_could_not_print">Nepodařilo se tisknout na %1$s — %2$s</string>
+</resources>

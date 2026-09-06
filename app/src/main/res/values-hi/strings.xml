@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Xerox 3025 प्रिंट प्लगइन</string>
+    <string name="settings_subtitle">प्रिंटर कॉन्फ़िगरेशन</string>
+
+    <string name="pref_category_printer">प्रिंटर सेटिंग्स</string>
+    <string name="pref_printer_name">प्रदर्शित नाम</string>
+    <string name="pref_printer_name_summary">Android प्रिंट डायलॉग में दिखाया जाने वाला नाम</string>
+    <string name="pref_printer_ip">प्रिंटर का IP पता</string>
+    <string name="pref_printer_ip_summary">यह आपके प्रिंटर के कॉन्फ़िगरेशन पेज पर मिलेगा</string>
+
+    <string name="pref_category_diagnostics">परीक्षण और निदान</string>
+    <string name="pref_test_network">नेटवर्क कनेक्शन का परीक्षण करें</string>
+    <string name="pref_test_network_summary">जांचें कि प्रिंटर उपलब्ध है या नहीं</string>
+    <string name="pref_print_test_page">परीक्षण पृष्ठ प्रिंट करें</string>
+    <string name="pref_print_test_page_summary">प्रिंटर को एक परीक्षण पृष्ठ भेजें</string>
+    <string name="pref_print_via_android">Android के माध्यम से प्रिंट करें</string>
+    <string name="pref_print_via_android_summary">पूरी प्रिंट प्रक्रिया का परीक्षण करें (डायलॉग में Xerox 3025 चुनें)</string>
+    <string name="pref_job_history">प्रिंट जॉब का इतिहास</string>
+    <string name="pref_job_history_summary">हाल के प्रिंट जॉब देखें</string>
+    <string name="pref_view_logs">डीबग लॉग देखें</string>
+    <string name="pref_view_logs_summary">प्रिंट सेवा के नैदानिक लॉग देखें</string>
+
+    <string name="pref_run_test_suite">प्रिंट टेस्ट सुइट चलाएं</string>
+    <string name="pref_run_test_suite_summary">5 परीक्षण दस्तावेज़ प्रिंट करें: चालान, ग्रेस्केल, घना पाठ, आकृतियाँ, लेटर आकार</string>
+
+    <string name="pref_category_instructions">उपयोग कैसे करें</string>
+    <string name="pref_info_title">सेटअप निर्देश</string>
+    <string name="pref_info_summary">1. ऊपर प्रिंटर का IP सेट करें\n2. Android सेटिंग्स → कनेक्टेड डिवाइस → प्रिंटिंग पर जाएं\n3. \"Xerox 3025 प्रिंट प्लगइन\" सक्षम करें\n4. कोई भी दस्तावेज़ प्रिंट करें और \"Xerox WorkCentre 3025\" चुनें</string>
+
+    <!-- Scan -->
+    <string name="pref_scan_document">दस्तावेज़ स्कैन करें</string>
+    <string name="pref_scan_document_summary">फ्लैटबेड स्कैनर से स्कैन करें</string>
+    <string name="scan_title">दस्तावेज़ स्कैन करें</string>
+    <string name="scan_button">स्कैन करें</string>
+    <string name="scan_label_resolution">रिज़ॉल्यूशन</string>
+    <string name="scan_label_color">रंग</string>
+    <string name="scan_color_grayscale">ग्रेस्केल</string>
+    <string name="scan_color_rgb">रंगीन</string>
+    <string name="scan_color_bw">ब्लैक एंड व्हाइट</string>
+    <string name="scan_status_ready">स्कैनर तैयार है। दस्तावेज़ को ग्लास पर रखें और स्कैन दबाएं।</string>
+    <string name="scan_status_checking">स्कैनर स्थिति की जाँच हो रही है…</string>
+    <string name="scan_status_scanning">स्कैन किया जा रहा है… कृपया प्रतीक्षा करें</string>
+    <string name="scan_status_retrieving">स्कैन की गई छवि प्राप्त हो रही है…</string>
+    <string name="scan_status_done">स्कैन पूरा हुआ (%d KB)</string>
+    <string name="scan_status_error">स्कैनर त्रुटि: %s</string>
+    <string name="scan_status_busy">स्कैनर व्यस्त है: %s</string>
+    <string name="scan_status_decode_error">स्कैन की गई छवि को डिकोड नहीं किया जा सका</string>
+    <string name="scan_status_no_data">स्कैनर से कोई छवि डेटा प्राप्त नहीं हुआ</string>
+    <string name="scan_preview_desc">स्कैन की गई छवि का पूर्वावलोकन</string>
+    <string name="scan_save">सहेजें</string>
+    <string name="scan_share">साझा करें</string>
+    <string name="scan_share_title">स्कैन की गई छवि साझा करें</string>
+    <string name="scan_saved">%s में सहेजा गया</string>
+    <string name="scan_save_failed">सहेजना विफल: %s</string>
+    <string name="scan_share_failed">साझा करना विफल: %s</string>
+
+    <!-- History -->
+    <string name="job_history_title">प्रिंट जॉब का इतिहास</string>
+    <string name="clear_history">इतिहास साफ़ करें</string>
+    <string name="no_print_history">अभी तक कोई प्रिंट कार्य नहीं है</string>
+    <string name="job_status_completed">पूर्ण</string>
+    <string name="job_status_failed">विफल</string>
+    <string name="job_status_cancelled">रद्द</string>
+    <string name="pages_count">%d पृष्ठ</string>
+
+    <!-- Network Test Dialog -->
+    <string name="net_test_title">नेटवर्क परीक्षण</string>
+    <string name="net_test_testing">%s से कनेक्शन का परीक्षण हो रहा है…</string>
+    <string name="net_test_target">लक्ष्य: %s\n\n</string>
+    <string name="net_test_dns_ok">[OK] DNS हल हुआ: %1$s (%2$d ms)\n</string>
+    <string name="net_test_dns_fail">[FAIL] DNS समाधान विफल: %s\n</string>
+    <string name="net_test_ping_ok">[OK] पिंग: पहुंच योग्य (%d ms)\n</string>
+    <string name="net_test_ping_warn">[WARN] पिंग: कोई ICMP उत्तर नहीं (%d ms)\n</string>
+    <string name="net_test_ping_fail">[WARN] पिंग विफल: %s\n</string>
+    <string name="net_test_port9100_ok">[OK] पोर्ट 9100 खुला है (%d ms)\n</string>
+    <string name="net_test_port9100_warn">[WARN] पोर्ट 9100 बंद है\n</string>
+    <string name="net_test_ipp_ok">[OK] IPP पोर्ट %1$d खुला है (%2$d ms)\n</string>
+    <string name="net_test_ipp_fail">[FAIL] IPP पोर्ट %1$d बंद है: %2$s\n</string>
+    <string name="net_test_ready">प्रिंटर पहुंच योग्य और तैयार है।</string>
+    <string name="net_test_unreachable">प्रिंटर तक नहीं पहुंचा जा सका। IP और प्रिंटर चालू होने की जांच करें।</string>
+
+    <!-- Print Test Page Dialog -->
+    <string name="print_test_title">परीक्षण पृष्ठ प्रिंट करें</string>
+    <string name="print_test_sending">%s पर परीक्षण पृष्ठ भेजा जा रहा है…</string>
+    <string name="print_test_success">परीक्षण पृष्ठ सफलतापूर्वक भेजा गया!\n\nIPP के माध्यम से %2$s पर %1$d बाइट्स भेजे गए\n\nप्रिंटर शीघ्र ही पृष्ठ प्रिंट करेगा।</string>
+    <string name="print_test_ipp_failed">IPP अनुरोध विफल रहा:\n%s</string>
+    <string name="print_test_failed">परीक्षण पृष्ठ भेजने में विफल:\n\n%s</string>
+
+    <!-- Test Suite Dialog -->
+    <string name="test_suite_title">प्रिंट टेस्ट सुइट</string>
+    <string name="test_suite_starting">टेस्ट सुइट शुरू हो रहा है (5 दस्तावेज़)…</string>
+    <string name="test_suite_progress">परीक्षण %1$d/%2$d: %3$s</string>
+    <string name="test_suite_summary">परिणाम: %1$d सफल, %2$d विफल\n\n%3$s</string>
+
+    <!-- Log Viewer -->
+    <string name="logs_title">डीबग लॉग</string>
+    <string name="logs_empty">(कोई लॉग प्रविष्टि नहीं)</string>
+    <string name="logs_copied">लॉग कॉपी किए गए</string>
+    <string name="logs_cleared">लॉग साफ़ किए गए</string>
+
+    <!-- Common Dialog Actions -->
+    <string name="dialog_ok">ठीक है</string>
+    <string name="dialog_close">बंद करें</string>
+    <string name="dialog_copy">कॉपी करें</string>
+    <string name="dialog_clear">साफ़ करें</string>
+
+    <!-- Notifications & Print Service -->
+    <string name="notif_channel_name">प्रिंट कार्य</string>
+    <string name="notif_channel_desc">प्रिंट कार्य स्थिति सूचनाएं</string>
+    <string name="notif_printing_title">प्रिंट हो रहा है…</string>
+    <string name="notif_print_complete_title">प्रिंट पूरा हुआ</string>
+    <string name="notif_print_failed_title">प्रिंट विफल</string>
+    <string name="print_error_no_doc">कोई दस्तावेज़ डेटा उपलब्ध नहीं है</string>
+    <string name="print_error_cancelled">उपयोगकर्ता द्वारा रद्द किया गया</string>
+    <string name="print_error_oom">दस्तावेज़ 600 DPI पर रेंडर करने के लिए बहुत बड़ा है</string>
+    <string name="print_error_could_not_print">%1$s पर प्रिंट नहीं किया जा सका — %2$s</string>
+</resources>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Модуль печати Xerox 3025</string>
+    <string name="settings_subtitle">Настройка принтера</string>
+
+    <string name="pref_category_printer">Настройки принтера</string>
+    <string name="pref_printer_name">Отображаемое имя</string>
+    <string name="pref_printer_name_summary">Имя, отображаемое в диалоге печати Android</string>
+    <string name="pref_printer_ip">IP-адрес принтера</string>
+    <string name="pref_printer_ip_summary">Указан на странице конфигурации принтера</string>
+
+    <string name="pref_category_diagnostics">Тестирование и диагностика</string>
+    <string name="pref_test_network">Проверить сетевое подключение</string>
+    <string name="pref_test_network_summary">Проверить доступность принтера по сети</string>
+    <string name="pref_print_test_page">Печать пробной страницы</string>
+    <string name="pref_print_test_page_summary">Отправить пробную страницу на принтер</string>
+    <string name="pref_print_via_android">Печать через систему Android</string>
+    <string name="pref_print_via_android_summary">Проверить весь процесс печати (выберите Xerox 3025 в диалоге)</string>
+    <string name="pref_job_history">История печати</string>
+    <string name="pref_job_history_summary">Просмотр последних заданий печати</string>
+    <string name="pref_view_logs">Просмотр журнала отладки</string>
+    <string name="pref_view_logs_summary">Просмотр диагностических логов службы печати</string>
+
+    <string name="pref_run_test_suite">Запустить набор тестов печати</string>
+    <string name="pref_run_test_suite_summary">Печать 5 тестовых документов: счёт, градации серого, плотный текст, фигуры, формат Letter</string>
+
+    <string name="pref_category_instructions">Инструкция</string>
+    <string name="pref_info_title">Инструкция по настройке</string>
+    <string name="pref_info_summary">1. Укажите IP-адрес принтера выше\n2. Откройте «Настройки» Android → «Подключенные устройства» → «Печать»\n3. Включите «Модуль печати Xerox 3025»\n4. Откройте любой документ для печати и выберите «Xerox WorkCentre 3025»</string>
+
+    <!-- Scan -->
+    <string name="pref_scan_document">Сканировать документ</string>
+    <string name="pref_scan_document_summary">Сканирование с планшетного сканера</string>
+    <string name="scan_title">Сканирование документа</string>
+    <string name="scan_button">Сканировать</string>
+    <string name="scan_label_resolution">Разрешение</string>
+    <string name="scan_label_color">Цвет</string>
+    <string name="scan_color_grayscale">Оттенки серого</string>
+    <string name="scan_color_rgb">Цветной</string>
+    <string name="scan_color_bw">Черно-белый</string>
+    <string name="scan_status_ready">Сканер готов. Поместите документ на стекло и нажмите «Сканировать».</string>
+    <string name="scan_status_checking">Проверка состояния сканера…</string>
+    <string name="scan_status_scanning">Сканирование… пожалуйста, подождите</string>
+    <string name="scan_status_retrieving">Получение отсканированного изображения…</string>
+    <string name="scan_status_done">Сканирование завершено (%d КБ)</string>
+    <string name="scan_status_error">Ошибка сканера: %s</string>
+    <string name="scan_status_busy">Сканер занят: %s</string>
+    <string name="scan_status_decode_error">Не удалось декодировать изображение со сканера</string>
+    <string name="scan_status_no_data">Данные изображения не получены от сканера</string>
+    <string name="scan_preview_desc">Предпросмотр отсканированного изображения</string>
+    <string name="scan_save">Сохранить</string>
+    <string name="scan_share">Поделиться</string>
+    <string name="scan_share_title">Поделиться изображением</string>
+    <string name="scan_saved">Сохранено в %s</string>
+    <string name="scan_save_failed">Ошибка сохранения: %s</string>
+    <string name="scan_share_failed">Ошибка отправки: %s</string>
+
+    <!-- History -->
+    <string name="job_history_title">История печати</string>
+    <string name="clear_history">Очистить историю</string>
+    <string name="no_print_history">Заданий печати пока нет</string>
+    <string name="job_status_completed">ВЫПОЛНЕНО</string>
+    <string name="job_status_failed">ОШИБКА</string>
+    <string name="job_status_cancelled">ОТМЕНЕНО</string>
+    <string name="pages_count">%d стр.</string>
+
+    <!-- Network Test Dialog -->
+    <string name="net_test_title">Проверка сети</string>
+    <string name="net_test_testing">Проверка подключения к %s…</string>
+    <string name="net_test_target">Цель: %s\n\n</string>
+    <string name="net_test_dns_ok">[OK] DNS разрешён: %1$s (%2$d мс)\n</string>
+    <string name="net_test_dns_fail">[ОШИБКА] Ошибка DNS: %s\n</string>
+    <string name="net_test_ping_ok">[OK] Пинг: доступен (%d мс)\n</string>
+    <string name="net_test_ping_warn">[ПРЕДУПРЕЖДЕНИЕ] Пинг: нет ответа ICMP (%d мс)\n</string>
+    <string name="net_test_ping_fail">[ПРЕДУПРЕЖДЕНИЕ] Ошибка пинга: %s\n</string>
+    <string name="net_test_port9100_ok">[OK] Порт 9100 открыт (%d мс)\n</string>
+    <string name="net_test_port9100_warn">[ПРЕДУПРЕЖДЕНИЕ] Порт 9100 закрыт\n</string>
+    <string name="net_test_ipp_ok">[OK] Порт IPP %1$d открыт (%2$d мс)\n</string>
+    <string name="net_test_ipp_fail">[ОШИБКА] Порт IPP %1$d закрыт: %2$s\n</string>
+    <string name="net_test_ready">Принтер доступен и готов к работе.</string>
+    <string name="net_test_unreachable">Не удалось подключиться к принтеру. Проверьте IP-адрес и включен ли принтер.</string>
+
+    <!-- Print Test Page Dialog -->
+    <string name="print_test_title">Печать пробной страницы</string>
+    <string name="print_test_sending">Отправка пробной страницы на %s…</string>
+    <string name="print_test_success">Пробная страница успешно отправлена!\n\n%1$d байт передано по протоколу IPP на %2$s\n\nПринтер скоро напечатает страницу.</string>
+    <string name="print_test_ipp_failed">Запрос IPP завершился с ошибкой:\n%s</string>
+    <string name="print_test_failed">Не удалось отправить пробную страницу:\n\n%s</string>
+
+    <!-- Test Suite Dialog -->
+    <string name="test_suite_title">Набор тестов печати</string>
+    <string name="test_suite_starting">Запуск набора тестов (5 документов)…</string>
+    <string name="test_suite_progress">Тест %1$d/%2$d: %3$s</string>
+    <string name="test_suite_summary">Результаты: %1$d пройдено, %2$d с ошибкой\n\n%3$s</string>
+
+    <!-- Log Viewer -->
+    <string name="logs_title">Журнал отладки</string>
+    <string name="logs_empty">(журнал пуст)</string>
+    <string name="logs_copied">Логи скопированы</string>
+    <string name="logs_cleared">Логи очищены</string>
+
+    <!-- Common Dialog Actions -->
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_close">Закрыть</string>
+    <string name="dialog_copy">Копировать</string>
+    <string name="dialog_clear">Очистить</string>
+
+    <!-- Notifications & Print Service -->
+    <string name="notif_channel_name">Задания печати</string>
+    <string name="notif_channel_desc">Уведомления о состоянии заданий печати</string>
+    <string name="notif_printing_title">Печать…</string>
+    <string name="notif_print_complete_title">Печать завершена</string>
+    <string name="notif_print_failed_title">Ошибка печати</string>
+    <string name="print_error_no_doc">Данные документа недоступны</string>
+    <string name="print_error_cancelled">Отменено пользователем</string>
+    <string name="print_error_oom">Документ слишком велик для рендеринга в 600 DPI</string>
+    <string name="print_error_could_not_print">Не удалось напечатать на %1$s — %2$s</string>
+</resources>

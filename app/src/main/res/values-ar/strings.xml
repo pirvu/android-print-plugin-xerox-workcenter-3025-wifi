@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">إضافة طباعة Xerox 3025</string>
+    <string name="settings_subtitle">إعدادات الطابعة</string>
+
+    <string name="pref_category_printer">إعدادات الطابعة</string>
+    <string name="pref_printer_name">الاسم المعروض</string>
+    <string name="pref_printer_name_summary">الاسم المعروض في نافذة الطباعة في Android</string>
+    <string name="pref_printer_ip">عنوان IP الخاص بالطابعة</string>
+    <string name="pref_printer_ip_summary">تجد هذا في صفحة إعدادات الطابعة</string>
+
+    <string name="pref_category_diagnostics">الاختبار والتشخيص</string>
+    <string name="pref_test_network">اختبار اتصال الشبكة</string>
+    <string name="pref_test_network_summary">التحقق من إمكانية الوصول إلى الطابعة</string>
+    <string name="pref_print_test_page">طباعة صفحة اختبار</string>
+    <string name="pref_print_test_page_summary">إرسال صفحة اختبار إلى الطابعة</string>
+    <string name="pref_print_via_android">الطباعة عبر نظام Android</string>
+    <string name="pref_print_via_android_summary">اختبار مسار الطباعة بالكامل (اختر Xerox 3025 في النافذة)</string>
+    <string name="pref_job_history">سجل مهام الطباعة</string>
+    <string name="pref_job_history_summary">عرض مهام الطباعة الأخيرة</string>
+    <string name="pref_view_logs">عرض سجلات التصحيح</string>
+    <string name="pref_view_logs_summary">عرض سجلات تشخيص خدمة الطباعة</string>
+
+    <string name="pref_run_test_suite">تشغيل مجموعة اختبارات الطباعة</string>
+    <string name="pref_run_test_suite_summary">طباعة 5 مستندات اختبار: فاتورة، تدرج رمادي، نص كثيف، أشكال، حجم Letter</string>
+
+    <string name="pref_category_instructions">طريقة الاستخدام</string>
+    <string name="pref_info_title">تعليمات الإعداد</string>
+    <string name="pref_info_summary">1. حدد عنوان IP للطابعة أعلاه\n2. انتقل إلى إعدادات Android ← الأجهزة المتصلة ← الطباعة\n3. فعّل \"إضافة طباعة Xerox 3025\"\n4. اطبع أي مستند واختر \"Xerox WorkCentre 3025\"</string>
+
+    <!-- Scan -->
+    <string name="pref_scan_document">مسح مستند ضوئيًا</string>
+    <string name="pref_scan_document_summary">المسح من الماسح الضوئي المسطح</string>
+    <string name="scan_title">مسح مستند ضوئيًا</string>
+    <string name="scan_button">مسح ضوئي</string>
+    <string name="scan_label_resolution">الدقة</string>
+    <string name="scan_label_color">اللون</string>
+    <string name="scan_color_grayscale">تدرج رمادي</string>
+    <string name="scan_color_rgb">ألوان</string>
+    <string name="scan_color_bw">أبيض وأسود</string>
+    <string name="scan_status_ready">الماسح جاهز. ضع المستند على الزجاج واضغط على مسح ضوئي.</string>
+    <string name="scan_status_checking">جارٍ التحقق من حالة الماسح الضوئي…</string>
+    <string name="scan_status_scanning">جارٍ المسح الضوئي… يُرجى الانتظار</string>
+    <string name="scan_status_retrieving">جارٍ استرداد الصورة الممسوحة…</string>
+    <string name="scan_status_done">اكتمل المسح الضوئي (%d ك.ب)</string>
+    <string name="scan_status_error">خطأ في الماسح الضوئي: %s</string>
+    <string name="scan_status_busy">الماسح الضوئي مشغول: %s</string>
+    <string name="scan_status_decode_error">تعذر فك ترميز الصورة الممسوحة</string>
+    <string name="scan_status_no_data">لم يتم استلام أي بيانات صورة من الماسح</string>
+    <string name="scan_preview_desc">معاينة الصورة الممسوحة</string>
+    <string name="scan_save">حفظ</string>
+    <string name="scan_share">مشاركة</string>
+    <string name="scan_share_title">مشاركة الصورة الممسوحة</string>
+    <string name="scan_saved">تم الحفظ في %s</string>
+    <string name="scan_save_failed">فشل الحفظ: %s</string>
+    <string name="scan_share_failed">فشلت المشاركة: %s</string>
+
+    <!-- History -->
+    <string name="job_history_title">سجل مهام الطباعة</string>
+    <string name="clear_history">مسح السجل</string>
+    <string name="no_print_history">لا توجد مهام طباعة بعد</string>
+    <string name="job_status_completed">مكتمل</string>
+    <string name="job_status_failed">فشل</string>
+    <string name="job_status_cancelled">ملغى</string>
+    <string name="pages_count">%d صفحة</string>
+
+    <!-- Network Test Dialog -->
+    <string name="net_test_title">اختبار الشبكة</string>
+    <string name="net_test_testing">جارٍ اختبار الاتصال بـ %s…</string>
+    <string name="net_test_target">الهدف: %s\n\n</string>
+    <string name="net_test_dns_ok">[OK] تم حل DNS: %1$s (%2$d مللي ثانية)\n</string>
+    <string name="net_test_dns_fail">[فشل] فشل حل DNS: %s\n</string>
+    <string name="net_test_ping_ok">[OK] اختبار Ping: يمكن الوصول (%d مللي ثانية)\n</string>
+    <string name="net_test_ping_warn">[تحذير] اختبار Ping: لا يوجد رد ICMP (%d مللي ثانية)\n</string>
+    <string name="net_test_ping_fail">[تحذير] فشل Ping: %s\n</string>
+    <string name="net_test_port9100_ok">[OK] المنفذ 9100 مفتوح (%d مللي ثانية)\n</string>
+    <string name="net_test_port9100_warn">[تحذير] المنفذ 9100 مغلق\n</string>
+    <string name="net_test_ipp_ok">[OK] منفذ IPP %1$d مفتوح (%2$d مللي ثانية)\n</string>
+    <string name="net_test_ipp_fail">[فشل] منفذ IPP %1$d مغلق: %2$s\n</string>
+    <string name="net_test_ready">الطابعة متصلة وجاهزة للاستخدام.</string>
+    <string name="net_test_unreachable">تعذر الوصول إلى الطابعة. تحقق من عنوان IP وتشغيل الطابعة.</string>
+
+    <!-- Print Test Page Dialog -->
+    <string name="print_test_title">طباعة صفحة اختبار</string>
+    <string name="print_test_sending">جارٍ إرسال صفحة الاختبار إلى %s…</string>
+    <string name="print_test_success">تم إرسال صفحة الاختبار بنجاح!\n\nتم إرسال %1$d بايت عبر IPP إلى %2$s\n\nستطبع الطابعة الصفحة قريبًا.</string>
+    <string name="print_test_ipp_failed">فشل طلب IPP:\n%s</string>
+    <string name="print_test_failed">فشل إرسال صفحة الاختبار:\n\n%s</string>
+
+    <!-- Test Suite Dialog -->
+    <string name="test_suite_title">مجموعة اختبارات الطباعة</string>
+    <string name="test_suite_starting">بدء مجموعة الاختبارات (5 مستندات)…</string>
+    <string name="test_suite_progress">اختبار %1$d/%2$d: %3$s</string>
+    <string name="test_suite_summary">النتائج: %1$d ناجح، %2$d فاشل\n\n%3$s</string>
+
+    <!-- Log Viewer -->
+    <string name="logs_title">سجلات التصحيح</string>
+    <string name="logs_empty">(لا توجد سجلات)</string>
+    <string name="logs_copied">تم نسخ السجلات</string>
+    <string name="logs_cleared">تم مسح السجلات</string>
+
+    <!-- Common Dialog Actions -->
+    <string name="dialog_ok">حسناً</string>
+    <string name="dialog_close">إغلاق</string>
+    <string name="dialog_copy">نسخ</string>
+    <string name="dialog_clear">مسح</string>
+
+    <!-- Notifications & Print Service -->
+    <string name="notif_channel_name">مهام الطباعة</string>
+    <string name="notif_channel_desc">إشعارات حالة مهام الطباعة</string>
+    <string name="notif_printing_title">جارٍ الطباعة…</string>
+    <string name="notif_print_complete_title">اكتملت الطباعة</string>
+    <string name="notif_print_failed_title">فشلت الطباعة</string>
+    <string name="print_error_no_doc">لا توجد بيانات مستند متاحة</string>
+    <string name="print_error_cancelled">تم الإلغاء بواسطة المستخدم</string>
+    <string name="print_error_oom">المستند كبير جدًا بحيث يتعذر عرضه بدقة 600 DPI</string>
+    <string name="print_error_could_not_print">تعذرت الطباعة على %1$s — %2$s</string>
+</resources>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Xerox 3025 印刷プラグイン</string>
+    <string name="settings_subtitle">プリンター設定</string>
+
+    <string name="pref_category_printer">プリンター設定</string>
+    <string name="pref_printer_name">表示名</string>
+    <string name="pref_printer_name_summary">Androidの印刷ダイアログに表示される名前</string>
+    <string name="pref_printer_ip">プリンターのIPアドレス</string>
+    <string name="pref_printer_ip_summary">プリンターの設定ページで確認できます</string>
+
+    <string name="pref_category_diagnostics">テストと診断</string>
+    <string name="pref_test_network">ネットワーク接続をテスト</string>
+    <string name="pref_test_network_summary">プリンターへの接続を確認します</string>
+    <string name="pref_print_test_page">テストページを印刷</string>
+    <string name="pref_print_test_page_summary">テストページをプリンターに送信します</string>
+    <string name="pref_print_via_android">Android経由で印刷</string>
+    <string name="pref_print_via_android_summary">印刷フロー全体をテスト（ダイアログでXerox 3025を選択）</string>
+    <string name="pref_job_history">印刷ジョブ履歴</string>
+    <string name="pref_job_history_summary">最近の印刷ジョブを表示</string>
+    <string name="pref_view_logs">デバッグログを表示</string>
+    <string name="pref_view_logs_summary">印刷サービスの診断ログを表示</string>
+
+    <string name="pref_run_test_suite">印刷テストスイートを実行</string>
+    <string name="pref_run_test_suite_summary">5つのテストドキュメントを印刷：請求書、グレースケール、密集テキスト、図形、レターサイズ</string>
+
+    <string name="pref_category_instructions">使い方</string>
+    <string name="pref_info_title">セットアップ手順</string>
+    <string name="pref_info_summary">1. 上記でプリンターのIPを設定します\n2. Androidの「設定」→「接続済みのデバイス」→「印刷」に移動します\n3.「Xerox 3025 印刷プラグイン」を有効にします\n4. ドキュメントを印刷し、「Xerox WorkCentre 3025」を選択します</string>
+
+    <!-- Scan -->
+    <string name="pref_scan_document">ドキュメントをスキャン</string>
+    <string name="pref_scan_document_summary">フラットベッドスキャナーからスキャン</string>
+    <string name="scan_title">ドキュメントをスキャン</string>
+    <string name="scan_button">スキャン</string>
+    <string name="scan_label_resolution">解像度</string>
+    <string name="scan_label_color">カラー</string>
+    <string name="scan_color_grayscale">グレースケール</string>
+    <string name="scan_color_rgb">カラー</string>
+    <string name="scan_color_bw">白黒</string>
+    <string name="scan_status_ready">スキャナーの準備ができました。原稿台にセットして「スキャン」をタップしてください。</string>
+    <string name="scan_status_checking">スキャナーの状態を確認中…</string>
+    <string name="scan_status_scanning">スキャン中… お待ちください</string>
+    <string name="scan_status_retrieving">スキャン画像を取得中…</string>
+    <string name="scan_status_done">スキャン完了 (%d KB)</string>
+    <string name="scan_status_error">スキャナーエラー: %s</string>
+    <string name="scan_status_busy">スキャナー使用中: %s</string>
+    <string name="scan_status_decode_error">スキャン画像をデコードできませんでした</string>
+    <string name="scan_status_no_data">スキャナーから画像データを受信できませんでした</string>
+    <string name="scan_preview_desc">スキャン画像のプレビュー</string>
+    <string name="scan_save">保存</string>
+    <string name="scan_share">共有</string>
+    <string name="scan_share_title">スキャン画像を共有</string>
+    <string name="scan_saved">%s に保存しました</string>
+    <string name="scan_save_failed">保存に失敗しました: %s</string>
+    <string name="scan_share_failed">共有に失敗しました: %s</string>
+
+    <!-- History -->
+    <string name="job_history_title">印刷ジョブ履歴</string>
+    <string name="clear_history">履歴を消去</string>
+    <string name="no_print_history">印刷ジョブはありません</string>
+    <string name="job_status_completed">完了</string>
+    <string name="job_status_failed">失敗</string>
+    <string name="job_status_cancelled">キャンセル</string>
+    <string name="pages_count">%d ページ</string>
+
+    <!-- Network Test Dialog -->
+    <string name="net_test_title">ネットワークテスト</string>
+    <string name="net_test_testing">%s への接続をテスト中…</string>
+    <string name="net_test_target">対象: %s\n\n</string>
+    <string name="net_test_dns_ok">[OK] DNS解決成功: %1$s (%2$d ms)\n</string>
+    <string name="net_test_dns_fail">[失敗] DNS解決失敗: %s\n</string>
+    <string name="net_test_ping_ok">[OK] Ping: 到達可能 (%d ms)\n</string>
+    <string name="net_test_ping_warn">[警告] Ping: ICMP応答なし (%d ms)\n</string>
+    <string name="net_test_ping_fail">[警告] Ping失敗: %s\n</string>
+    <string name="net_test_port9100_ok">[OK] ポート 9100 開放中 (%d ms)\n</string>
+    <string name="net_test_port9100_warn">[警告] ポート 9100 閉鎖\n</string>
+    <string name="net_test_ipp_ok">[OK] IPPポート %1$d 開放中 (%2$d ms)\n</string>
+    <string name="net_test_ipp_fail">[失敗] IPPポート %1$d 閉鎖: %2$s\n</string>
+    <string name="net_test_ready">プリンターは接続可能で準備完了です。</string>
+    <string name="net_test_unreachable">プリンターに接続できませんでした。IPアドレスと電源を確認してください。</string>
+
+    <!-- Print Test Page Dialog -->
+    <string name="print_test_title">テストページを印刷</string>
+    <string name="print_test_sending">テストページを %s に送信中…</string>
+    <string name="print_test_success">テストページを送信しました！\n\n%1$d バイトを IPP 経由で %2$s に送信\n\nまもなく印刷されます。</string>
+    <string name="print_test_ipp_failed">IPPリクエストが失敗しました:\n%s</string>
+    <string name="print_test_failed">テストページの送信に失敗しました:\n\n%s</string>
+
+    <!-- Test Suite Dialog -->
+    <string name="test_suite_title">印刷テストスイート</string>
+    <string name="test_suite_starting">テストスイートを開始中（5つのドキュメント）…</string>
+    <string name="test_suite_progress">テスト %1$d/%2$d: %3$s</string>
+    <string name="test_suite_summary">結果: %1$d 成功、%2$d 失敗\n\n%3$s</string>
+
+    <!-- Log Viewer -->
+    <string name="logs_title">デバッグログ</string>
+    <string name="logs_empty">(ログエントリなし)</string>
+    <string name="logs_copied">ログをコピーしました</string>
+    <string name="logs_cleared">ログを消去しました</string>
+
+    <!-- Common Dialog Actions -->
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_close">閉じる</string>
+    <string name="dialog_copy">コピー</string>
+    <string name="dialog_clear">消去</string>
+
+    <!-- Notifications & Print Service -->
+    <string name="notif_channel_name">印刷ジョブ</string>
+    <string name="notif_channel_desc">印刷ジョブの状態通知</string>
+    <string name="notif_printing_title">印刷中…</string>
+    <string name="notif_print_complete_title">印刷完了</string>
+    <string name="notif_print_failed_title">印刷失敗</string>
+    <string name="print_error_no_doc">ドキュメントデータがありません</string>
+    <string name="print_error_cancelled">ユーザーによってキャンセルされました</string>
+    <string name="print_error_oom">ドキュメントが大きすぎて600 DPIでレンダリングできません</string>
+    <string name="print_error_could_not_print">%1$s で印刷できませんでした — %2$s</string>
+</resources>

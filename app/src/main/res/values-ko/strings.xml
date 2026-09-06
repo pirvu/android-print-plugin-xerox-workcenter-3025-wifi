@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Xerox 3025 인쇄 플러그인</string>
+    <string name="settings_subtitle">프린터 설정</string>
+
+    <string name="pref_category_printer">프린터 설정</string>
+    <string name="pref_printer_name">표시 이름</string>
+    <string name="pref_printer_name_summary">Android 인쇄 대화상자에 표시되는 이름</string>
+    <string name="pref_printer_ip">프린터 IP 주소</string>
+    <string name="pref_printer_ip_summary">프린터 구성 페이지에서 확인 가능합니다</string>
+
+    <string name="pref_category_diagnostics">테스트 및 진단</string>
+    <string name="pref_test_network">네트워크 연결 테스트</string>
+    <string name="pref_test_network_summary">프린터 연결 상태 확인</string>
+    <string name="pref_print_test_page">테스트 페이지 인쇄</string>
+    <string name="pref_print_test_page_summary">프린터로 테스트 페이지 전송</string>
+    <string name="pref_print_via_android">Android 시스템을 통해 인쇄</string>
+    <string name="pref_print_via_android_summary">전체 인쇄 파이프라인 테스트(대화상자에서 Xerox 3025 선택)</string>
+    <string name="pref_job_history">인쇄 작업 기록</string>
+    <string name="pref_job_history_summary">최근 인쇄 작업 보기</string>
+    <string name="pref_view_logs">디버그 로그 보기</string>
+    <string name="pref_view_logs_summary">인쇄 서비스 진단 로그 보기</string>
+
+    <string name="pref_run_test_suite">인쇄 테스트 스위트 실행</string>
+    <string name="pref_run_test_suite_summary">5개 테스트 문서 인쇄: 청구서, 그레이스케일, 조밀한 텍스트, 도형, Letter 크기</string>
+
+    <string name="pref_category_instructions">사용 방법</string>
+    <string name="pref_info_title">설정 안내</string>
+    <string name="pref_info_summary">1. 위에서 프린터 IP를 설정하세요\n2. Android 설정 → 연결된 기기 → 인쇄로 이동하세요\n3. \"Xerox 3025 인쇄 플러그인\"을 활성화하세요\n4. 문서를 인쇄하고 \"Xerox WorkCentre 3025\"를 선택하세요</string>
+
+    <!-- Scan -->
+    <string name="pref_scan_document">문서 스캔</string>
+    <string name="pref_scan_document_summary">평판 스캐너에서 스캔</string>
+    <string name="scan_title">문서 스캔</string>
+    <string name="scan_button">스캔</string>
+    <string name="scan_label_resolution">해상도</string>
+    <string name="scan_label_color">색상</string>
+    <string name="scan_color_grayscale">그레이스케일</string>
+    <string name="scan_color_rgb">컬러</string>
+    <string name="scan_color_bw">흑백</string>
+    <string name="scan_status_ready">스캐너 준비 완료. 평판에 문서를 올리고 스캔을 누르세요.</string>
+    <string name="scan_status_checking">스캐너 상태 확인 중…</string>
+    <string name="scan_status_scanning">스캔 중… 잠시만 기다려주세요</string>
+    <string name="scan_status_retrieving">스캔 이미지 가져오는 중…</string>
+    <string name="scan_status_done">스캔 완료 (%d KB)</string>
+    <string name="scan_status_error">스캐너 오류: %s</string>
+    <string name="scan_status_busy">스캐너 사용 중: %s</string>
+    <string name="scan_status_decode_error">스캔 이미지를 디코딩할 수 없습니다</string>
+    <string name="scan_status_no_data">스캐너로부터 이미지 데이터를 수신하지 못했습니다</string>
+    <string name="scan_preview_desc">스캔 이미지 미리보기</string>
+    <string name="scan_save">저장</string>
+    <string name="scan_share">공유</string>
+    <string name="scan_share_title">스캔 이미지 공유</string>
+    <string name="scan_saved">%s에 저장되었습니다</string>
+    <string name="scan_save_failed">저장 실패: %s</string>
+    <string name="scan_share_failed">공유 실패: %s</string>
+
+    <!-- History -->
+    <string name="job_history_title">인쇄 작업 기록</string>
+    <string name="clear_history">기록 삭제</string>
+    <string name="no_print_history">인쇄 작업이 없습니다</string>
+    <string name="job_status_completed">완료됨</string>
+    <string name="job_status_failed">실패함</string>
+    <string name="job_status_cancelled">취소됨</string>
+    <string name="pages_count">%d페이지</string>
+
+    <!-- Network Test Dialog -->
+    <string name="net_test_title">네트워크 테스트</string>
+    <string name="net_test_testing">%s 연결 테스트 중…</string>
+    <string name="net_test_target">대상: %s\n\n</string>
+    <string name="net_test_dns_ok">[OK] DNS 확인됨: %1$s (%2$d ms)\n</string>
+    <string name="net_test_dns_fail">[실패] DNS 확인 실패: %s\n</string>
+    <string name="net_test_ping_ok">[OK] Ping: 도달 가능 (%d ms)\n</string>
+    <string name="net_test_ping_warn">[경고] Ping: ICMP 응답 없음 (%d ms)\n</string>
+    <string name="net_test_ping_fail">[경고] Ping 실패: %s\n</string>
+    <string name="net_test_port9100_ok">[OK] 9100 포트 열림 (%d ms)\n</string>
+    <string name="net_test_port9100_warn">[경고] 9100 포트 닫힘\n</string>
+    <string name="net_test_ipp_ok">[OK] IPP 포트 %1$d 열림 (%2$d ms)\n</string>
+    <string name="net_test_ipp_fail">[실패] IPP 포트 %1$d 닫힘: %2$s\n</string>
+    <string name="net_test_ready">프린터에 연결할 수 있으며 준비되었습니다.</string>
+    <string name="net_test_unreachable">프린터에 연결할 수 없습니다. IP 주소와 전원을 확인하세요.</string>
+
+    <!-- Print Test Page Dialog -->
+    <string name="print_test_title">테스트 페이지 인쇄</string>
+    <string name="print_test_sending">%s(으)로 테스트 페이지 전송 중…</string>
+    <string name="print_test_success">테스트 페이지 전송 완료!\n\nIPP를 통해 %2$s(으)로 %1$d바이트 전송됨\n\n곧 인쇄물이 출력됩니다.</string>
+    <string name="print_test_ipp_failed">IPP 요청 실패:\n%s</string>
+    <string name="print_test_failed">테스트 페이지 전송 실패:\n\n%s</string>
+
+    <!-- Test Suite Dialog -->
+    <string name="test_suite_title">인쇄 테스트 스위트</string>
+    <string name="test_suite_starting">테스트 스위트 시작 중(5개 문서)…</string>
+    <string name="test_suite_progress">테스트 %1$d/%2$d: %3$s</string>
+    <string name="test_suite_summary">결과: %1$d개 성공, %2$d개 실패\n\n%3$s</string>
+
+    <!-- Log Viewer -->
+    <string name="logs_title">디버그 로그</string>
+    <string name="logs_empty">(로그 항목 없음)</string>
+    <string name="logs_copied">로그 복사됨</string>
+    <string name="logs_cleared">로그 삭제됨</string>
+
+    <!-- Common Dialog Actions -->
+    <string name="dialog_ok">확인</string>
+    <string name="dialog_close">닫기</string>
+    <string name="dialog_copy">복사</string>
+    <string name="dialog_clear">삭제</string>
+
+    <!-- Notifications & Print Service -->
+    <string name="notif_channel_name">인쇄 작업</string>
+    <string name="notif_channel_desc">인쇄 작업 상태 알림</string>
+    <string name="notif_printing_title">인쇄 중…</string>
+    <string name="notif_print_complete_title">인쇄 완료</string>
+    <string name="notif_print_failed_title">인쇄 실패</string>
+    <string name="print_error_no_doc">사용 가능한 문서 데이터가 없습니다</string>
+    <string name="print_error_cancelled">사용자에 의해 취소됨</string>
+    <string name="print_error_oom">문서가 너무 커서 600 DPI로 렌더링할 수 없습니다</string>
+    <string name="print_error_could_not_print">%1$s에서 인쇄할 수 없습니다 — %2$s</string>
+</resources>

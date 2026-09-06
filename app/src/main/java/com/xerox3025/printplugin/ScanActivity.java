@@ -44,7 +44,6 @@ public class ScanActivity extends AppCompatActivity {
     private final int[] resolutions = {75, 100, 150, 200, 300};
     private final String[] resolutionLabels = {"75 DPI", "100 DPI", "150 DPI", "200 DPI", "300 DPI"};
     private final String[] colorModes = {"Grayscale8", "RGB24", "BlackAndWhite1"};
-    private final String[] colorLabels = {"Grayscale", "Color", "Black & White"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,12 +65,18 @@ public class ScanActivity extends AppCompatActivity {
                 android.R.layout.simple_spinner_dropdown_item, resolutionLabels));
         spinnerResolution.setSelection(4); // 300 DPI default
 
+        String[] colorLabels = {
+                getString(R.string.scan_color_grayscale),
+                getString(R.string.scan_color_rgb),
+                getString(R.string.scan_color_bw)
+        };
         spinnerColor.setAdapter(new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_dropdown_item, colorLabels));
         spinnerColor.setSelection(0); // Grayscale default
 
         findViewById(R.id.btn_scan).setOnClickListener(v -> startScan());
         findViewById(R.id.btn_save).setOnClickListener(v -> saveImage());
+        findViewById(R.id.btn_export_pdf).setOnClickListener(v -> exportPdf());
         findViewById(R.id.btn_share).setOnClickListener(v -> shareImage());
 
         // Check scanner status on open
@@ -198,7 +203,7 @@ public class ScanActivity extends AppCompatActivity {
                         Toast.LENGTH_LONG).show();
             }
         } catch (IOException e) {
-            Toast.makeText(this, "Save failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.scan_save_failed, e.getMessage()), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -222,7 +227,30 @@ public class ScanActivity extends AppCompatActivity {
             share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivity(Intent.createChooser(share, getString(R.string.scan_share_title)));
         } catch (Exception e) {
-            Toast.makeText(this, "Share failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.scan_share_failed, e.getMessage()), Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void exportPdf() {
+        if (lastScanData == null) return;
+
+        String mimeType = "jpg".equals(lastScanFormat) ? "image/jpeg" : "image/tiff";
+
+        new Thread(() -> {
+            PdfExportHelper.ExportResult result = PdfExportHelper.exportToPdf(
+                    this, lastScanData, mimeType);
+
+            runOnUiThread(() -> {
+                if (result.success) {
+                    Toast.makeText(this,
+                            getString(R.string.scan_pdf_saved, result.filePath),
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(this,
+                            getString(R.string.scan_pdf_failed, result.error),
+                            Toast.LENGTH_LONG).show();
+                }
+            });
+        }).start();
     }
 }
