@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Xerox 3025 Afdruk-plug-in</string>
+    <string name="settings_subtitle">Printerconfiguratie</string>
+
+    <string name="pref_category_printer">Printerinstellingen</string>
+    <string name="pref_printer_name">Weergavenaam</string>
+    <string name="pref_printer_name_summary">Naam weergegeven in Android-afdrukscherm</string>
+    <string name="pref_printer_ip">IP-adres van printer</string>
+    <string name="pref_printer_ip_summary">Te vinden op de configuratiepagina van de printer</string>
+
+    <string name="pref_category_diagnostics">Test &amp; Diagnostiek</string>
+    <string name="pref_test_network">Netwerkverbinding testen</string>
+    <string name="pref_test_network_summary">Controleren of de printer bereikbaar is</string>
+    <string name="pref_print_test_page">Testpagina afdrukken</string>
+    <string name="pref_print_test_page_summary">Een testpagina naar de printer sturen</string>
+    <string name="pref_print_via_android">Afdrukken via Android</string>
+    <string name="pref_print_via_android_summary">Volledig afdrukproces testen (kies Xerox 3025 in het dialoogvenster)</string>
+    <string name="pref_job_history">Afdruktaakgeschiedenis</string>
+    <string name="pref_job_history_summary">Recente afdruktaken bekijken</string>
+    <string name="pref_view_logs">Foutopsporingslogboeken bekijken</string>
+    <string name="pref_view_logs_summary">Diagnostische logboeken van de afdrukservice bekijken</string>
+
+    <string name="pref_run_test_suite">Afdruktestpakket uitvoeren</string>
+    <string name="pref_run_test_suite_summary">5 testdocumenten afdrukken: factuur, grijstinten, dichte tekst, vormen, Letter-formaat</string>
+
+    <string name="pref_category_instructions">Handleiding</string>
+    <string name="pref_info_title">Installatie-instructies</string>
+    <string name="pref_info_summary">1. Stel het IP-adres van de printer hierboven in\n2. Ga naar Android Instellingen → Verbonden apparaten → Afdrukken\n3. Schakel \"Xerox 3025 Afdruk-plug-in\" in\n4. Druk een document af en selecteer \"Xerox WorkCentre 3025\"</string>
+
+    <!-- Scan -->
+    <string name="pref_scan_document">Document scannen</string>
+    <string name="pref_scan_document_summary">Scannen vanaf de vlakbedscanner</string>
+    <string name="scan_title">Document scannen</string>
+    <string name="scan_button">Scannen</string>
+    <string name="scan_label_resolution">Resolutie</string>
+    <string name="scan_label_color">Kleur</string>
+    <string name="scan_color_grayscale">Grijstinten</string>
+    <string name="scan_color_rgb">Kleur</string>
+    <string name="scan_color_bw">Zwart-wit</string>
+    <string name="scan_status_ready">Scanner gereed. Plaats een document op de glasplaat en tik op Scannen.</string>
+    <string name="scan_status_checking">Scannerstatus controleren…</string>
+    <string name="scan_status_scanning">Scannen… even geduld</string>
+    <string name="scan_status_retrieving">Gescande afbeelding ophalen…</string>
+    <string name="scan_status_done">Scan voltooid (%d KB)</string>
+    <string name="scan_status_error">Scannerfout: %s</string>
+    <string name="scan_status_busy">Scanner bezet: %s</string>
+    <string name="scan_status_decode_error">Kan gescande afbeelding niet decoderen</string>
+    <string name="scan_status_no_data">Geen afbeeldingsgegevens ontvangen van scanner</string>
+    <string name="scan_preview_desc">Voorbeeld van gescande afbeelding</string>
+    <string name="scan_save">Opslaan</string>
+    <string name="scan_share">Delen</string>
+    <string name="scan_share_title">Gescande afbeelding delen</string>
+    <string name="scan_saved">Opgeslagen in %s</string>
+    <string name="scan_save_failed">Opslaan mislukt: %s</string>
+    <string name="scan_share_failed">Delen mislukt: %s</string>
+
+    <!-- History -->
+    <string name="job_history_title">Afdruktaakgeschiedenis</string>
+    <string name="clear_history">Geschiedenis wissen</string>
+    <string name="no_print_history">Nog geen afdruktaken</string>
+    <string name="job_status_completed">VOLTOOID</string>
+    <string name="job_status_failed">MISLUKT</string>
+    <string name="job_status_cancelled">GEANNULEERD</string>
+    <string name="pages_count">%d pagina(\'s)</string>
+
+    <!-- Network Test Dialog -->
+    <string name="net_test_title">Netwerktest</string>
+    <string name="net_test_testing">Verbinding met %s testen…</string>
+    <string name="net_test_target">Doel: %s\n\n</string>
+    <string name="net_test_dns_ok">[OK] DNS opgelost: %1$s (%2$d ms)\n</string>
+    <string name="net_test_dns_fail">[FOUT] DNS-resolutie mislukt: %s\n</string>
+    <string name="net_test_ping_ok">[OK] Ping: bereikbaar (%d ms)\n</string>
+    <string name="net_test_ping_warn">[WAARSCHUWING] Ping: geen ICMP-antwoord (%d ms)\n</string>
+    <string name="net_test_ping_fail">[WAARSCHUWING] Ping mislukt: %s\n</string>
+    <string name="net_test_port9100_ok">[OK] Poort 9100 open (%d ms)\n</string>
+    <string name="net_test_port9100_warn">[WAARSCHUWING] Poort 9100 gesloten\n</string>
+    <string name="net_test_ipp_ok">[OK] IPP-poort %1$d open (%2$d ms)\n</string>
+    <string name="net_test_ipp_fail">[FOUT] IPP-poort %1$d gesloten: %2$s\n</string>
+    <string name="net_test_ready">Printer is bereikbaar en gereed.</string>
+    <string name="net_test_unreachable">Kan geen verbinding maken met de printer. Controleer IP en stroom.</string>
+
+    <!-- Print Test Page Dialog -->
+    <string name="print_test_title">Testpagina afdrukken</string>
+    <string name="print_test_sending">Testpagina verzenden naar %s…</string>
+    <string name="print_test_success">Testpagina succesvol verzonden!\n\n%1$d bytes verzonden via IPP naar %2$s\n\nDe printer zal de pagina binnenkort afdrukken.</string>
+    <string name="print_test_ipp_failed">IPP-verzoek mislukt:\n%s</string>
+    <string name="print_test_failed">Verzenden van testpagina mislukt:\n\n%s</string>
+
+    <!-- Test Suite Dialog -->
+    <string name="test_suite_title">Afdruktestpakket</string>
+    <string name="test_suite_starting">Testpakket starten (5 documenten)…</string>
+    <string name="test_suite_progress">Test %1$d/%2$d: %3$s</string>
+    <string name="test_suite_summary">Resultaten: %1$d geslaagd, %2$d mislukt\n\n%3$s</string>
+
+    <!-- Log Viewer -->
+    <string name="logs_title">Foutopsporingslogboeken</string>
+    <string name="logs_empty">(geen logboekvermeldingen)</string>
+    <string name="logs_copied">Logboeken gekopieerd</string>
+    <string name="logs_cleared">Logboeken gewist</string>
+
+    <!-- Common Dialog Actions -->
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_close">Sluiten</string>
+    <string name="dialog_copy">Kopiëren</string>
+    <string name="dialog_clear">Wissen</string>
+
+    <!-- Notifications & Print Service -->
+    <string name="notif_channel_name">Afdruktaken</string>
+    <string name="notif_channel_desc">Statusmeldingen voor afdruktaken</string>
+    <string name="notif_printing_title">Afdrukken…</string>
+    <string name="notif_print_complete_title">Afdrukken voltooid</string>
+    <string name="notif_print_failed_title">Afdrukken mislukt</string>
+    <string name="print_error_no_doc">Geen documentgegevens beschikbaar</string>
+    <string name="print_error_cancelled">Geannuleerd door gebruiker</string>
+    <string name="print_error_oom">Document te groot om te renderen op 600 DPI</string>
+    <string name="print_error_could_not_print">Kan niet afdrukken op %1$s — %2$s</string>
+</resources>

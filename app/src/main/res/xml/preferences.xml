@@ -4,6 +4,11 @@
 
     <PreferenceCategory app:title="@string/pref_category_printer">
 
+        <Preference
+            app:key="discover_printers"
+            app:title="@string/pref_discover_printers"
+            app:summary="@string/pref_discover_printers_summary" />
+
         <EditTextPreference
             app:key="printer_name"
             app:title="@string/pref_printer_name"

@@ -17,7 +17,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Resolution" />
+            android:text="@string/scan_label_resolution" />
 
         <Spinner
             android:id="@+id/spinner_resolution"
@@ -37,7 +37,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Color" />
+            android:text="@string/scan_label_color" />
 
         <Spinner
             android:id="@+id/spinner_color"
@@ -80,7 +80,7 @@
             android:background="#F0F0F0" />
     </ScrollView>
 
-    <!-- Save/Share buttons -->
+    <!-- Save/Share/PDF buttons -->
     <LinearLayout
         android:id="@+id/buttons_row"
         android:layout_width="match_parent"
@@ -94,8 +94,17 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="4dp"
             android:text="@string/scan_save" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_export_pdf"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="@string/scan_export_pdf" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_share"

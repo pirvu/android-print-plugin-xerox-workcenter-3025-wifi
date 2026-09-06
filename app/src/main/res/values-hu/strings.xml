@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Xerox 3025 nyomtatóbővítmény</string>
+    <string name="settings_subtitle">Nyomtató konfigurációja</string>
+
+    <string name="pref_category_printer">Nyomtatóbeállítások</string>
+    <string name="pref_printer_name">Megjelenített név</string>
+    <string name="pref_printer_name_summary">Az Android nyomtatási párbeszédpanelen megjelenő név</string>
+    <string name="pref_printer_ip">Nyomtató IP-címe</string>
+    <string name="pref_printer_ip_summary">Megtalálható a nyomtató konfigurációs oldalán</string>
+
+    <string name="pref_category_diagnostics">Teszt és diagnosztika</string>
+    <string name="pref_test_network">Hálózati kapcsolat tesztelése</string>
+    <string name="pref_test_network_summary">Nyomtató elérhetőségének ellenőrzése</string>
+    <string name="pref_print_test_page">Tesztoldal nyomtatása</string>
+    <string name="pref_print_test_page_summary">Tesztoldal küldése a nyomtatóra</string>
+    <string name="pref_print_via_android">Nyomtatás Androidon keresztül</string>
+    <string name="pref_print_via_android_summary">A teljes nyomtatási folyamat tesztelése (válassza a Xerox 3025-öt)</string>
+    <string name="pref_job_history">Nyomtatási előzmények</string>
+    <string name="pref_job_history_summary">Legutóbbi nyomtatási feladatok megtekintése</string>
+    <string name="pref_view_logs">Hibakeresési naplók megtekintése</string>
+    <string name="pref_view_logs_summary">Nyomtatási szolgáltatás diagnosztikai naplói</string>
+
+    <string name="pref_run_test_suite">Nyomtatási tesztcsomag futtatása</string>
+    <string name="pref_run_test_suite_summary">5 tesztdokumentum nyomtatása: számla, szürkeárnyalat, sűrű szöveg, alakzatok, Letter méret</string>
+
+    <string name="pref_category_instructions">Útmutató</string>
+    <string name="pref_info_title">Beállítási útmutató</string>
+    <string name="pref_info_summary">1. Állítsa be a nyomtató IP-címét fent\n2. Nyissa meg az Android Beállítások → Csatlakoztatott eszközök → Nyomtatás menüt\n3. Engedélyezze a \"Xerox 3025 nyomtatóbővítmény\" elemet\n4. Nyomtasson ki bármilyen dokumentumot, és válassza a \"Xerox WorkCentre 3025\"-öt</string>
+
+    <!-- Scan -->
+    <string name="pref_scan_document">Dokumentum beolvasása</string>
+    <string name="pref_scan_document_summary">Beolvasás síkágyas lapolvasóról</string>
+    <string name="scan_title">Dokumentum beolvasása</string>
+    <string name="scan_button">Beolvasás</string>
+    <string name="scan_label_resolution">Felbontás</string>
+    <string name="scan_label_color">Szín</string>
+    <string name="scan_color_grayscale">Szürkeárnyalatos</string>
+    <string name="scan_color_rgb">Színes</string>
+    <string name="scan_color_bw">Fekete-fehér</string>
+    <string name="scan_status_ready">A szkenner kész. Helyezze a dokumentumot az üvegre, és érintse meg a Beolvasás gombot.</string>
+    <string name="scan_status_checking">Szkenner állapotának ellenőrzése…</string>
+    <string name="scan_status_scanning">Beolvasás… kérjük, várjon</string>
+    <string name="scan_status_retrieving">Beolvasott kép lekérése…</string>
+    <string name="scan_status_done">Beolvasás befejezve (%d KB)</string>
+    <string name="scan_status_error">Szkennerhiba: %s</string>
+    <string name="scan_status_busy">A szkenner foglalt: %s</string>
+    <string name="scan_status_decode_error">Nem sikerült dekódolni a beolvasott képet</string>
+    <string name="scan_status_no_data">Nem érkezett képadat a szkennertől</string>
+    <string name="scan_preview_desc">Beolvasott kép előnézete</string>
+    <string name="scan_save">Mentés</string>
+    <string name="scan_share">Megosztás</string>
+    <string name="scan_share_title">Beolvasott kép megosztása</string>
+    <string name="scan_saved">Elmentve ide: %s</string>
+    <string name="scan_save_failed">Mentés sikertelen: %s</string>
+    <string name="scan_share_failed">Megosztás sikertelen: %s</string>
+
+    <!-- History -->
+    <string name="job_history_title">Nyomtatási előzmények</string>
+    <string name="clear_history">Előzmények törlése</string>
+    <string name="no_print_history">Még nincsenek nyomtatási feladatok</string>
+    <string name="job_status_completed">KÉSZ</string>
+    <string name="job_status_failed">SIKERTELEN</string>
+    <string name="job_status_cancelled">MEGSZAKÍTVA</string>
+    <string name="pages_count">%d oldal</string>
+
+    <!-- Network Test Dialog -->
+    <string name="net_test_title">Hálózati teszt</string>
+    <string name="net_test_testing">Kapcsolódás tesztelése ide: %s…</string>
+    <string name="net_test_target">Cél: %s\n\n</string>
+    <string name="net_test_dns_ok">[OK] DNS feloldva: %1$s (%2$d ms)\n</string>
+    <string name="net_test_dns_fail">[HIBA] DNS-feloldási hiba: %s\n</string>
+    <string name="net_test_ping_ok">[OK] Ping: elérhető (%d ms)\n</string>
+    <string name="net_test_ping_warn">[FIGYELEM] Ping: nincs ICMP válasz (%d ms)\n</string>
+    <string name="net_test_ping_fail">[FIGYELEM] Ping sikertelen: %s\n</string>
+    <string name="net_test_port9100_ok">[OK] 9100-as port nyitva (%d ms)\n</string>
+    <string name="net_test_port9100_warn">[FIGYELEM] 9100-as port zárva\n</string>
+    <string name="net_test_ipp_ok">[OK] IPP-port (%1$d) nyitva (%2$d ms)\n</string>
+    <string name="net_test_ipp_fail">[HIBA] IPP-port (%1$d) zárva: %2$s\n</string>
+    <string name="net_test_ready">A nyomtató elérhető és készen áll.</string>
+    <string name="net_test_unreachable">A nyomtató nem érhető el. Ellenőrizze az IP-címet és a bekapcsolást.</string>
+
+    <!-- Print Test Page Dialog -->
+    <string name="print_test_title">Tesztoldal nyomtatása</string>
+    <string name="print_test_sending">Tesztoldal küldése ide: %s…</string>
+    <string name="print_test_success">A tesztoldal elküldése sikeres!\n\n%1$d bájt elküldve IPP-n keresztül ide: %2$s\n\nA nyomtató hamarosan kinyomtatja az oldalt.</string>
+    <string name="print_test_ipp_failed">IPP kérés sikertelen:\n%s</string>
+    <string name="print_test_failed">A tesztoldal elküldése sikertelen:\n\n%s</string>
+
+    <!-- Test Suite Dialog -->
+    <string name="test_suite_title">Nyomtatási tesztcsomag</string>
+    <string name="test_suite_starting">Tesztcsomag indítása (5 dokumentum)…</string>
+    <string name="test_suite_progress">Teszt %1$d/%2$d: %3$s</string>
+    <string name="test_suite_summary">Eredmények: %1$d sikeres, %2$d sikertelen\n\n%3$s</string>
+
+    <!-- Log Viewer -->
+    <string name="logs_title">Hibakeresési naplók</string>
+    <string name="logs_empty">(nincsenek naplóbejegyzések)</string>
+    <string name="logs_copied">Naplók másolva</string>
+    <string name="logs_cleared">Naplók törölve</string>
+
+    <!-- Common Dialog Actions -->
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_close">Bezárás</string>
+    <string name="dialog_copy">Másolás</string>
+    <string name="dialog_clear">Törlés</string>
+
+    <!-- Notifications & Print Service -->
+    <string name="notif_channel_name">Nyomtatási feladatok</string>
+    <string name="notif_channel_desc">Nyomtatási feladatok állapotértesítései</string>
+    <string name="notif_printing_title">Nyomtatás…</string>
+    <string name="notif_print_complete_title">Nyomtatás befejezve</string>
+    <string name="notif_print_failed_title">Nyomtatás sikertelen</string>
+    <string name="print_error_no_doc">Nem állnak rendelkezésre dokumentumadatok</string>
+    <string name="print_error_cancelled">A felhasználó megszakította</string>
+    <string name="print_error_oom">A dokumentum túl nagy a 600 DPI felbontású rendereléshez</string>
+    <string name="print_error_could_not_print">Nem sikerült nyomtatni ide: %1$s — %2$s</string>
+</resources>

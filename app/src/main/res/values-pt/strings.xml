@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Plugin de impressão Xerox 3025</string>
+    <string name="settings_subtitle">Configuração da impressora</string>
+
+    <string name="pref_category_printer">Definições da impressora</string>
+    <string name="pref_printer_name">Nome de exibição</string>
+    <string name="pref_printer_name_summary">Nome exibido na caixa de diálogo de impressão do Android</string>
+    <string name="pref_printer_ip">Endereço IP da impressora</string>
+    <string name="pref_printer_ip_summary">Consulte na página de configuração da sua impressora</string>
+
+    <string name="pref_category_diagnostics">Testes e diagnósticos</string>
+    <string name="pref_test_network">Testar ligação de rede</string>
+    <string name="pref_test_network_summary">Verificar se a impressora está acessível</string>
+    <string name="pref_print_test_page">Imprimir página de teste</string>
+    <string name="pref_print_test_page_summary">Enviar uma página de teste para a impressora</string>
+    <string name="pref_print_via_android">Imprimir via sistema Android</string>
+    <string name="pref_print_via_android_summary">Testar o fluxo completo de impressão (selecione Xerox 3025 no diálogo)</string>
+    <string name="pref_job_history">Histórico de trabalhos</string>
+    <string name="pref_job_history_summary">Ver trabalhos de impressão recentes</string>
+    <string name="pref_view_logs">Ver registos de depuração</string>
+    <string name="pref_view_logs_summary">Ver registos de diagnóstico do serviço de impressão</string>
+
+    <string name="pref_run_test_suite">Executar bateria de testes</string>
+    <string name="pref_run_test_suite_summary">Imprimir 5 documentos de teste: fatura, tons de cinzento, texto denso, formas, formato Letter</string>
+
+    <string name="pref_category_instructions">Instruções</string>
+    <string name="pref_info_title">Instruções de configuração</string>
+    <string name="pref_info_summary">1. Defina o IP da impressora acima\n2. Aceda a Definições do Android → Dispositivos ligados → Impressão\n3. Ative o \"Plugin de impressão Xerox 3025\"\n4. Imprima qualquer documento e selecione \"Xerox WorkCentre 3025\"</string>
+
+    <!-- Scan -->
+    <string name="pref_scan_document">Digitalizar documento</string>
+    <string name="pref_scan_document_summary">Digitalizar a partir do scanner de mesa</string>
+    <string name="scan_title">Digitalizar documento</string>
+    <string name="scan_button">Digitalizar</string>
+    <string name="scan_label_resolution">Resolução</string>
+    <string name="scan_label_color">Cor</string>
+    <string name="scan_color_grayscale">Tons de cinzento</string>
+    <string name="scan_color_rgb">Cor</string>
+    <string name="scan_color_bw">Preto e branco</string>
+    <string name="scan_status_ready">Scanner pronto. Coloque o documento no vidro e toque em Digitalizar.</string>
+    <string name="scan_status_checking">A verificar estado do scanner…</string>
+    <string name="scan_status_scanning">A digitalizar… por favor aguarde</string>
+    <string name="scan_status_retrieving">A obter imagem digitalizada…</string>
+    <string name="scan_status_done">Digitalização concluída (%d KB)</string>
+    <string name="scan_status_error">Erro do scanner: %s</string>
+    <string name="scan_status_busy">Scanner ocupado: %s</string>
+    <string name="scan_status_decode_error">Não foi possível descodificar a imagem digitalizada</string>
+    <string name="scan_status_no_data">Nenhum dado de imagem recebido do scanner</string>
+    <string name="scan_preview_desc">Pré-visualização da digitalização</string>
+    <string name="scan_save">Guardar</string>
+    <string name="scan_share">Partilhar</string>
+    <string name="scan_share_title">Partilhar imagem digitalizada</string>
+    <string name="scan_saved">Guardado em %s</string>
+    <string name="scan_save_failed">Falha ao guardar: %s</string>
+    <string name="scan_share_failed">Falha ao partilhar: %s</string>
+
+    <!-- History -->
+    <string name="job_history_title">Histórico de trabalhos</string>
+    <string name="clear_history">Limpar histórico</string>
+    <string name="no_print_history">Nenhum trabalho de impressão ainda</string>
+    <string name="job_status_completed">CONCLUÍDO</string>
+    <string name="job_status_failed">FALHOU</string>
+    <string name="job_status_cancelled">CANCELADO</string>
+    <string name="pages_count">%d página(s)</string>
+
+    <!-- Network Test Dialog -->
+    <string name="net_test_title">Teste de rede</string>
+    <string name="net_test_testing">A testar ligação a %s…</string>
+    <string name="net_test_target">Destino: %s\n\n</string>
+    <string name="net_test_dns_ok">[OK] DNS resolvido: %1$s (%2$d ms)\n</string>
+    <string name="net_test_dns_fail">[FALHA] Falha na resolução DNS: %s\n</string>
+    <string name="net_test_ping_ok">[OK] Ping: acessível (%d ms)\n</string>
+    <string name="net_test_ping_warn">[AVISO] Ping: sem resposta ICMP (%d ms)\n</string>
+    <string name="net_test_ping_fail">[AVISO] Falha no ping: %s\n</string>
+    <string name="net_test_port9100_ok">[OK] Porta 9100 aberta (%d ms)\n</string>
+    <string name="net_test_port9100_warn">[AVISO] Porta 9100 fechada\n</string>
+    <string name="net_test_ipp_ok">[OK] Porta IPP %1$d aberta (%2$d ms)\n</string>
+    <string name="net_test_ipp_fail">[FALHA] Porta IPP %1$d fechada: %2$s\n</string>
+    <string name="net_test_ready">A impressora está acessível e pronta.</string>
+    <string name="net_test_unreachable">Não foi possível alcançar a impressora. Verifique o IP e a alimentação.</string>
+
+    <!-- Print Test Page Dialog -->
+    <string name="print_test_title">Imprimir página de teste</string>
+    <string name="print_test_sending">A enviar página de teste para %s…</string>
+    <string name="print_test_success">Página de teste enviada com sucesso!\n\n%1$d bytes enviados via IPP para %2$s\n\nA impressora deverá imprimir a página em breve.</string>
+    <string name="print_test_ipp_failed">Falha no pedido IPP:\n%s</string>
+    <string name="print_test_failed">Falha ao enviar página de teste:\n\n%s</string>
+
+    <!-- Test Suite Dialog -->
+    <string name="test_suite_title">Bateria de testes de impressão</string>
+    <string name="test_suite_starting">A iniciar bateria de testes (5 documentos)…</string>
+    <string name="test_suite_progress">Teste %1$d/%2$d: %3$s</string>
+    <string name="test_suite_summary">Resultados: %1$d aprovados, %2$d falhados\n\n%3$s</string>
+
+    <!-- Log Viewer -->
+    <string name="logs_title">Registos de depuração</string>
+    <string name="logs_empty">(sem registos)</string>
+    <string name="logs_copied">Registos copiados</string>
+    <string name="logs_cleared">Registos limpos</string>
+
+    <!-- Common Dialog Actions -->
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_close">Fechar</string>
+    <string name="dialog_copy">Copiar</string>
+    <string name="dialog_clear">Limpar</string>
+
+    <!-- Notifications & Print Service -->
+    <string name="notif_channel_name">Trabalhos de impressão</string>
+    <string name="notif_channel_desc">Notificações de estado dos trabalhos de impressão</string>
+    <string name="notif_printing_title">A imprimir…</string>
+    <string name="notif_print_complete_title">Impressão concluída</string>
+    <string name="notif_print_failed_title">Falha na impressão</string>
+    <string name="print_error_no_doc">Nenhum dado do documento disponível</string>
+    <string name="print_error_cancelled">Cancelado pelo utilizador</string>
+    <string name="print_error_oom">Documento demasiado grande para renderizar a 600 DPI</string>
+    <string name="print_error_could_not_print">Não foi possível imprimir em %1$s — %2$s</string>
+</resources>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Xerox 3025 打印插件</string>
+    <string name="settings_subtitle">打印机配置</string>
+
+    <string name="pref_category_printer">打印机设置</string>
+    <string name="pref_printer_name">显示名称</string>
+    <string name="pref_printer_name_summary">在 Android 打印对话框中显示的名称</string>
+    <string name="pref_printer_ip">打印机 IP 地址</string>
+    <string name="pref_printer_ip_summary">可在打印机的配置页上找到</string>
+
+    <string name="pref_category_diagnostics">测试与诊断</string>
+    <string name="pref_test_network">测试网络连接</string>
+    <string name="pref_test_network_summary">检查打印机是否可访问</string>
+    <string name="pref_print_test_page">打印测试页</string>
+    <string name="pref_print_test_page_summary">向打印机发送测试页</string>
+    <string name="pref_print_via_android">通过 Android 系统打印</string>
+    <string name="pref_print_via_android_summary">测试完整打印流程（在对话框中选择 Xerox 3025）</string>
+    <string name="pref_job_history">打印任务历史</string>
+    <string name="pref_job_history_summary">查看最近的打印任务</string>
+    <string name="pref_view_logs">查看调试日志</string>
+    <string name="pref_view_logs_summary">查看打印服务诊断日志</string>
+
+    <string name="pref_run_test_suite">运行打印测试套件</string>
+    <string name="pref_run_test_suite_summary">打印 5 份测试文档：发票、灰度、密集文本、图形、Letter 尺寸</string>
+
+    <string name="pref_category_instructions">使用说明</string>
+    <string name="pref_info_title">设置说明</string>
+    <string name="pref_info_summary">1. 在上方设置打印机 IP\n2. 打开 Android 设置 → 已连接的设备 → 打印\n3. 启用 \"Xerox 3025 打印插件\"\n4. 打开任何文档进行打印，并选择 \"Xerox WorkCentre 3025\"</string>
+
+    <!-- Scan -->
+    <string name="pref_scan_document">扫描文档</string>
+    <string name="pref_scan_document_summary">从平板扫描仪扫描</string>
+    <string name="scan_title">扫描文档</string>
+    <string name="scan_button">扫描</string>
+    <string name="scan_label_resolution">分辨率</string>
+    <string name="scan_label_color">颜色</string>
+    <string name="scan_color_grayscale">灰度</string>
+    <string name="scan_color_rgb">彩色</string>
+    <string name="scan_color_bw">黑白</string>
+    <string name="scan_status_ready">扫描仪就绪。将文档放在扫描台上并点击扫描。</string>
+    <string name="scan_status_checking">正在检查扫描仪状态…</string>
+    <string name="scan_status_scanning">正在扫描… 请稍候</string>
+    <string name="scan_status_retrieving">正在获取扫描图像…</string>
+    <string name="scan_status_done">扫描完成 (%d KB)</string>
+    <string name="scan_status_error">扫描仪错误：%s</string>
+    <string name="scan_status_busy">扫描仪忙：%s</string>
+    <string name="scan_status_decode_error">无法解码扫描图像</string>
+    <string name="scan_status_no_data">未从扫描仪接收到图像数据</string>
+    <string name="scan_preview_desc">扫描图像预览</string>
+    <string name="scan_save">保存</string>
+    <string name="scan_share">分享</string>
+    <string name="scan_share_title">分享扫描图像</string>
+    <string name="scan_saved">已保存至 %s</string>
+    <string name="scan_save_failed">保存失败：%s</string>
+    <string name="scan_share_failed">分享失败：%s</string>
+
+    <!-- History -->
+    <string name="job_history_title">打印任务历史</string>
+    <string name="clear_history">清除历史</string>
+    <string name="no_print_history">暂无打印任务</string>
+    <string name="job_status_completed">已完成</string>
+    <string name="job_status_failed">失败</string>
+    <string name="job_status_cancelled">已取消</string>
+    <string name="pages_count">%d 页</string>
+
+    <!-- Network Test Dialog -->
+    <string name="net_test_title">网络测试</string>
+    <string name="net_test_testing">正在测试与 %s 的连接…</string>
+    <string name="net_test_target">目标：%s\n\n</string>
+    <string name="net_test_dns_ok">[OK] DNS 已解析：%1$s (%2$d 毫秒)\n</string>
+    <string name="net_test_dns_fail">[FAIL] DNS 解析失败：%s\n</string>
+    <string name="net_test_ping_ok">[OK] Ping：可达 (%d 毫秒)\n</string>
+    <string name="net_test_ping_warn">[WARN] Ping：无 ICMP 响应 (%d 毫秒)\n</string>
+    <string name="net_test_ping_fail">[WARN] Ping 失败：%s\n</string>
+    <string name="net_test_port9100_ok">[OK] 端口 9100 已打开 (%d 毫秒)\n</string>
+    <string name="net_test_port9100_warn">[WARN] 端口 9100 已关闭\n</string>
+    <string name="net_test_ipp_ok">[OK] IPP 端口 %1$d 已打开 (%2$d 毫秒)\n</string>
+    <string name="net_test_ipp_fail">[FAIL] IPP 端口 %1$d 已关闭：%2$s\n</string>
+    <string name="net_test_ready">打印机可访问且已就绪。</string>
+    <string name="net_test_unreachable">无法连接到打印机。请检查 IP 地址和电源。</string>
+
+    <!-- Print Test Page Dialog -->
+    <string name="print_test_title">打印测试页</string>
+    <string name="print_test_sending">正在向 %s 发送测试页…</string>
+    <string name="print_test_success">测试页发送成功！\n\n已通过 IPP 向 %2$s 发送 %1$d 字节\n\n打印机即将输出页面。</string>
+    <string name="print_test_ipp_failed">IPP 请求失败：\n%s</string>
+    <string name="print_test_failed">发送测试页失败：\n\n%s</string>
+
+    <!-- Test Suite Dialog -->
+    <string name="test_suite_title">打印测试套件</string>
+    <string name="test_suite_starting">正在启动测试套件（5 份文档）…</string>
+    <string name="test_suite_progress">测试 %1$d/%2$d：%3$s</string>
+    <string name="test_suite_summary">结果：%1$d 项通过，%2$d 项失败\n\n%3$s</string>
+
+    <!-- Log Viewer -->
+    <string name="logs_title">调试日志</string>
+    <string name="logs_empty">（无日志记录）</string>
+    <string name="logs_copied">日志已复制</string>
+    <string name="logs_cleared">日志已清除</string>
+
+    <!-- Common Dialog Actions -->
+    <string name="dialog_ok">确定</string>
+    <string name="dialog_close">关闭</string>
+    <string name="dialog_copy">复制</string>
+    <string name="dialog_clear">清除</string>
+
+    <!-- Notifications & Print Service -->
+    <string name="notif_channel_name">打印任务</string>
+    <string name="notif_channel_desc">打印任务状态通知</string>
+    <string name="notif_printing_title">正在打印…</string>
+    <string name="notif_print_complete_title">打印完成</string>
+    <string name="notif_print_failed_title">打印失败</string>
+    <string name="print_error_no_doc">无可用的文档数据</string>
+    <string name="print_error_cancelled">已由用户取消</string>
+    <string name="print_error_oom">文档过大，无法在 600 DPI 下渲染</string>
+    <string name="print_error_could_not_print">无法在 %1$s 上打印 — %2$s</string>
+</resources>

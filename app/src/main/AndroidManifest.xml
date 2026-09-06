@@ -30,7 +30,7 @@
         <activity
             android:name=".JobHistoryActivity"
             android:exported="false"
-            android:label="Print Job History" />
+            android:label="@string/job_history_title" />
 
         <!-- Scan activity -->
         <activity

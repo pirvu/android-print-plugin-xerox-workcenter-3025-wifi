@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Xerox 3025 Druck-Plugin</string>
+    <string name="settings_subtitle">Druckerkonfiguration</string>
+
+    <string name="pref_category_printer">Druckereinstellungen</string>
+    <string name="pref_printer_name">Anzeigename</string>
+    <string name="pref_printer_name_summary">Name im Android-Druckdialog</string>
+    <string name="pref_printer_ip">Drucker-IP-Adresse</string>
+    <string name="pref_printer_ip_summary">Auf der Konfigurationsseite Ihres Druckers zu finden</string>
+
+    <string name="pref_category_diagnostics">Test &amp; Diagnose</string>
+    <string name="pref_test_network">Netzwerkverbindung testen</string>
+    <string name="pref_test_network_summary">Prüfen, ob der Drucker erreichbar ist</string>
+    <string name="pref_print_test_page">Testseite drucken</string>
+    <string name="pref_print_test_page_summary">Eine Testseite an den Drucker senden</string>
+    <string name="pref_print_via_android">Über Android drucken</string>
+    <string name="pref_print_via_android_summary">Gesamten Druckablauf testen (Xerox 3025 im Dialog wählen)</string>
+    <string name="pref_job_history">Druckauftrag-Verlauf</string>
+    <string name="pref_job_history_summary">Letzte Druckaufträge anzeigen</string>
+    <string name="pref_view_logs">Debug-Protokolle anzeigen</string>
+    <string name="pref_view_logs_summary">Diagnoseprotokolle des Druckdienstes anzeigen</string>
+
+    <string name="pref_run_test_suite">Drucktest-Suite ausführen</string>
+    <string name="pref_run_test_suite_summary">5 Testdokumente drucken: Rechnung, Graustufen, dichter Text, Formen, Letter-Format</string>
+
+    <string name="pref_category_instructions">Anleitung</string>
+    <string name="pref_info_title">Einrichtungsanleitung</string>
+    <string name="pref_info_summary">1. Drucker-IP oben festlegen\n2. Gehen Sie zu Android-Einstellungen → Verbundene Geräte → Drucken\n3. Aktivieren Sie \"Xerox 3025 Druck-Plugin\"\n4. Beliebiges Dokument drucken und \"Xerox WorkCentre 3025\" auswählen</string>
+
+    <!-- Scan -->
+    <string name="pref_scan_document">Dokument scannen</string>
+    <string name="pref_scan_document_summary">Vom Flachbettscanner scannen</string>
+    <string name="scan_title">Dokument scannen</string>
+    <string name="scan_button">Scannen</string>
+    <string name="scan_label_resolution">Auflösung</string>
+    <string name="scan_label_color">Farbe</string>
+    <string name="scan_color_grayscale">Graustufen</string>
+    <string name="scan_color_rgb">Farbe</string>
+    <string name="scan_color_bw">Schwarzweiß</string>
+    <string name="scan_status_ready">Scanner bereit. Dokument auflegen und auf Scannen tippen.</string>
+    <string name="scan_status_checking">Scannerstatus wird überprüft…</string>
+    <string name="scan_status_scanning">Wird gescannt… bitte warten</string>
+    <string name="scan_status_retrieving">Gescanntes Bild wird abgerufen…</string>
+    <string name="scan_status_done">Scan abgeschlossen (%d KB)</string>
+    <string name="scan_status_error">Scannerfehler: %s</string>
+    <string name="scan_status_busy">Scanner beschäftigt: %s</string>
+    <string name="scan_status_decode_error">Gescanntes Bild konnte nicht dekodiert werden</string>
+    <string name="scan_status_no_data">Keine Bilddaten vom Scanner empfangen</string>
+    <string name="scan_preview_desc">Scan-Vorschau</string>
+    <string name="scan_save">Speichern</string>
+    <string name="scan_share">Teilen</string>
+    <string name="scan_share_title">Gescanntes Bild teilen</string>
+    <string name="scan_saved">Gespeichert unter %s</string>
+    <string name="scan_save_failed">Speichern fehlgeschlagen: %s</string>
+    <string name="scan_share_failed">Teilen fehlgeschlagen: %s</string>
+
+    <!-- History -->
+    <string name="job_history_title">Druckauftrag-Verlauf</string>
+    <string name="clear_history">Verlauf löschen</string>
+    <string name="no_print_history">Noch keine Druckaufträge</string>
+    <string name="job_status_completed">ABGESCHLOSSEN</string>
+    <string name="job_status_failed">FEHLGESCHLAGEN</string>
+    <string name="job_status_cancelled">ABGEBROCHEN</string>
+    <string name="pages_count">%d Seite(n)</string>
+
+    <!-- Network Test Dialog -->
+    <string name="net_test_title">Netzwerktest</string>
+    <string name="net_test_testing">Verbindung zu %s wird getestet…</string>
+    <string name="net_test_target">Ziel: %s\n\n</string>
+    <string name="net_test_dns_ok">[OK] DNS aufgelöst: %1$s (%2$d ms)\n</string>
+    <string name="net_test_dns_fail">[FEHLER] DNS-Auflösung fehlgeschlagen: %s\n</string>
+    <string name="net_test_ping_ok">[OK] Ping: erreichbar (%d ms)\n</string>
+    <string name="net_test_ping_warn">[WARNUNG] Ping: keine ICMP-Antwort (%d ms)\n</string>
+    <string name="net_test_ping_fail">[WARNUNG] Ping fehlgeschlagen: %s\n</string>
+    <string name="net_test_port9100_ok">[OK] Port 9100 offen (%d ms)\n</string>
+    <string name="net_test_port9100_warn">[WARNUNG] Port 9100 geschlossen\n</string>
+    <string name="net_test_ipp_ok">[OK] IPP-Port %1$d offen (%2$d ms)\n</string>
+    <string name="net_test_ipp_fail">[FEHLER] IPP-Port %1$d geschlossen: %2$s\n</string>
+    <string name="net_test_ready">Drucker ist erreichbar und bereit.</string>
+    <string name="net_test_unreachable">Drucker konnte nicht erreicht werden. Prüfen Sie IP und Stromversorgung.</string>
+
+    <!-- Print Test Page Dialog -->
+    <string name="print_test_title">Testseite drucken</string>
+    <string name="print_test_sending">Testseite wird an %s gesendet…</string>
+    <string name="print_test_success">Testseite erfolgreich gesendet!\n\n%1$d Bytes über IPP an %2$s übertragen\n\nDer Drucker sollte die Seite in Kürze drucken.</string>
+    <string name="print_test_ipp_failed">IPP-Anfrage fehlgeschlagen:\n%s</string>
+    <string name="print_test_failed">Senden der Testseite fehlgeschlagen:\n\n%s</string>
+
+    <!-- Test Suite Dialog -->
+    <string name="test_suite_title">Drucktest-Suite</string>
+    <string name="test_suite_starting">Test-Suite wird gestartet (5 Dokumente)…</string>
+    <string name="test_suite_progress">Test %1$d/%2$d: %3$s</string>
+    <string name="test_suite_summary">Ergebnisse: %1$d erfolgreich, %2$d fehlgeschlagen\n\n%3$s</string>
+
+    <!-- Log Viewer -->
+    <string name="logs_title">Debug-Protokolle</string>
+    <string name="logs_empty">(keine Protokolleinträge)</string>
+    <string name="logs_copied">Protokolle kopiert</string>
+    <string name="logs_cleared">Protokolle gelöscht</string>
+
+    <!-- Common Dialog Actions -->
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_close">Schließen</string>
+    <string name="dialog_copy">Kopieren</string>
+    <string name="dialog_clear">Löschen</string>
+
+    <!-- Notifications & Print Service -->
+    <string name="notif_channel_name">Druckaufträge</string>
+    <string name="notif_channel_desc">Statusbenachrichtigungen für Druckaufträge</string>
+    <string name="notif_printing_title">Drucken…</string>
+    <string name="notif_print_complete_title">Druck abgeschlossen</string>
+    <string name="notif_print_failed_title">Druck fehlgeschlagen</string>
+    <string name="print_error_no_doc">Keine Dokumentdaten verfügbar</string>
+    <string name="print_error_cancelled">Vom Benutzer abgebrochen</string>
+    <string name="print_error_oom">Dokument zu groß für das Rendern mit 600 DPI</string>
+    <string name="print_error_could_not_print">Drucken auf %1$s fehlgeschlagen — %2$s</string>
+</resources>

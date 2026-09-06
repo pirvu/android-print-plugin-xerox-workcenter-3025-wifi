@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Модуль друку Xerox 3025</string>
+    <string name="settings_subtitle">Налаштування принтера</string>
+
+    <string name="pref_category_printer">Налаштування принтера</string>
+    <string name="pref_printer_name">Відображуване ім\'я</string>
+    <string name="pref_printer_name_summary">Ім\'я, яке відображається у діалозі друку Android</string>
+    <string name="pref_printer_ip">IP-адреса принтера</string>
+    <string name="pref_printer_ip_summary">Знайдіть її на сторінці конфігурації принтера</string>
+
+    <string name="pref_category_diagnostics">Тестування та діагностика</string>
+    <string name="pref_test_network">Перевірити мережеве з\'єднання</string>
+    <string name="pref_test_network_summary">Перевірити доступність принтера через мережу</string>
+    <string name="pref_print_test_page">Друк тестової сторінки</string>
+    <string name="pref_print_test_page_summary">Надіслати тестову сторінку на принтер</string>
+    <string name="pref_print_via_android">Друк через систему Android</string>
+    <string name="pref_print_via_android_summary">Перевірити весь конвеєр друку (оберіть Xerox 3025 у діалозі)</string>
+    <string name="pref_job_history">Історія друку</string>
+    <string name="pref_job_history_summary">Перегляд останніх завдань друку</string>
+    <string name="pref_view_logs">Переглянути журнал налагодження</string>
+    <string name="pref_view_logs_summary">Перегляд діагностичних журналів служби друку</string>
+
+    <string name="pref_run_test_suite">Запустити набір тестів друку</string>
+    <string name="pref_run_test_suite_summary">Друк 5 тестових документів: рахунок, градації сірого, щільний текст, фігури, формат Letter</string>
+
+    <string name="pref_category_instructions">Інструкція</string>
+    <string name="pref_info_title">Інструкція з налаштування</string>
+    <string name="pref_info_summary">1. Вкажіть IP-адресу принтера вище\n2. Відкрийте «Налаштування» Android → «Підключені пристрої» → «Друк»\n3. Увімкніть «Модуль друку Xerox 3025»\n4. Відкрийте будь-який документ для друку та оберіть «Xerox WorkCentre 3025»</string>
+
+    <!-- Scan -->
+    <string name="pref_scan_document">Сканувати документ</string>
+    <string name="pref_scan_document_summary">Сканування з планшетного сканера</string>
+    <string name="scan_title">Сканування документа</string>
+    <string name="scan_button">Сканувати</string>
+    <string name="scan_label_resolution">Роздільна здатність</string>
+    <string name="scan_label_color">Колір</string>
+    <string name="scan_color_grayscale">Відтінки сірого</string>
+    <string name="scan_color_rgb">Кольоровий</string>
+    <string name="scan_color_bw">Чорно-білий</string>
+    <string name="scan_status_ready">Сканер готовий. Покладіть документ на скло і натисніть «Сканувати».</string>
+    <string name="scan_status_checking">Перевірка стану сканера…</string>
+    <string name="scan_status_scanning">Сканування… будь ласка, зачекайте</string>
+    <string name="scan_status_retrieving">Отримання відсканованого зображення…</string>
+    <string name="scan_status_done">Сканування завершено (%d КБ)</string>
+    <string name="scan_status_error">Помилка сканера: %s</string>
+    <string name="scan_status_busy">Сканер зайнятий: %s</string>
+    <string name="scan_status_decode_error">Не вдалося декодувати зображення зі сканера</string>
+    <string name="scan_status_no_data">Дані зображення не отримано від сканера</string>
+    <string name="scan_preview_desc">Попередній перегляд відсканованого зображення</string>
+    <string name="scan_save">Зберегти</string>
+    <string name="scan_share">Поділитися</string>
+    <string name="scan_share_title">Поділитися зображенням</string>
+    <string name="scan_saved">Збережено в %s</string>
+    <string name="scan_save_failed">Помилка збереження: %s</string>
+    <string name="scan_share_failed">Помилка надсилання: %s</string>
+
+    <!-- History -->
+    <string name="job_history_title">Історія друку</string>
+    <string name="clear_history">Очистити історію</string>
+    <string name="no_print_history">Завдань друку поки немає</string>
+    <string name="job_status_completed">ВИКОНАНО</string>
+    <string name="job_status_failed">ПОМИЛКА</string>
+    <string name="job_status_cancelled">СКАСОВАНО</string>
+    <string name="pages_count">%d стор.</string>
+
+    <!-- Network Test Dialog -->
+    <string name="net_test_title">Перевірка мережі</string>
+    <string name="net_test_testing">Перевірка з\'єднання з %s…</string>
+    <string name="net_test_target">Ціль: %s\n\n</string>
+    <string name="net_test_dns_ok">[OK] DNS розпізнано: %1$s (%2$d мс)\n</string>
+    <string name="net_test_dns_fail">[ПОМИЛКА] Помилка DNS: %s\n</string>
+    <string name="net_test_ping_ok">[OK] Пінг: доступний (%d мс)\n</string>
+    <string name="net_test_ping_warn">[ПОПЕРЕДЖЕННЯ] Пінг: немає відповіді ICMP (%d мс)\n</string>
+    <string name="net_test_ping_fail">[ПОПЕРЕДЖЕННЯ] Помилка пінгу: %s\n</string>
+    <string name="net_test_port9100_ok">[OK] Порт 9100 відкритий (%d мс)\n</string>
+    <string name="net_test_port9100_warn">[ПОПЕРЕДЖЕННЯ] Порт 9100 закритий\n</string>
+    <string name="net_test_ipp_ok">[OK] Порт IPP %1$d відкритий (%2$d мс)\n</string>
+    <string name="net_test_ipp_fail">[ПОМИЛКА] Порт IPP %1$d закритий: %2$s\n</string>
+    <string name="net_test_ready">Принтер доступний і готовий до роботи.</string>
+    <string name="net_test_unreachable">Не вдалося зв\'язатися з принтером. Перевірте IP-адресу та чи увімкнено принтер.</string>
+
+    <!-- Print Test Page Dialog -->
+    <string name="print_test_title">Друк тестової сторінки</string>
+    <string name="print_test_sending">Надсилання тестової сторінки на %s…</string>
+    <string name="print_test_success">Тестову сторінку успішно надіслано!\n\n%1$d байт передано через IPP на %2$s\n\nПринтер незабаром надрукує сторінку.</string>
+    <string name="print_test_ipp_failed">Запит IPP зазнав невдачі:\n%s</string>
+    <string name="print_test_failed">Не вдалося надіслати тестову сторінку:\n\n%s</string>
+
+    <!-- Test Suite Dialog -->
+    <string name="test_suite_title">Набір тестів друку</string>
+    <string name="test_suite_starting">Запуск набору тестів (5 документів)…</string>
+    <string name="test_suite_progress">Тест %1$d/%2$d: %3$s</string>
+    <string name="test_suite_summary">Результати: %1$d пройдено, %2$d з помилкою\n\n%3$s</string>
+
+    <!-- Log Viewer -->
+    <string name="logs_title">Журнал налагодження</string>
+    <string name="logs_empty">(журнал порожній)</string>
+    <string name="logs_copied">Журнал скопійовано</string>
+    <string name="logs_cleared">Журнал очищено</string>
+
+    <!-- Common Dialog Actions -->
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_close">Закрити</string>
+    <string name="dialog_copy">Копіювати</string>
+    <string name="dialog_clear">Очистити</string>
+
+    <!-- Notifications & Print Service -->
+    <string name="notif_channel_name">Завдання друку</string>
+    <string name="notif_channel_desc">Сповіщення про стан завдань друку</string>
+    <string name="notif_printing_title">Друк…</string>
+    <string name="notif_print_complete_title">Друк завершено</string>
+    <string name="notif_print_failed_title">Помилка друку</string>
+    <string name="print_error_no_doc">Дані документа недоступні</string>
+    <string name="print_error_cancelled">Скасовано користувачем</string>
+    <string name="print_error_oom">Документ занадто великий для відтворення в 600 DPI</string>
+    <string name="print_error_could_not_print">Не вдалося надрукувати на %1$s — %2$s</string>
+</resources>

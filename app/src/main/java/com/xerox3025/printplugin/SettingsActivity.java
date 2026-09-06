@@ -35,6 +35,8 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -82,6 +84,14 @@ public class SettingsActivity extends AppCompatActivity {
                 ipPref.setOnBindEditTextListener(editText ->
                         editText.setInputType(InputType.TYPE_CLASS_TEXT
                                 | InputType.TYPE_TEXT_VARIATION_URI));
+            }
+
+            Preference discoverPrinters = findPreference("discover_printers");
+            if (discoverPrinters != null) {
+                discoverPrinters.setOnPreferenceClickListener(pref -> {
+                    runPrinterDiscovery();
+                    return true;
+                });
             }
 
             Preference scanDoc = findPreference("scan_document");
@@ -146,12 +156,99 @@ public class SettingsActivity extends AppCompatActivity {
             return prefs.getString("printer_ip", "192.168.0.109");
         }
 
+        private void runPrinterDiscovery() {
+            PrinterDiscoveryManager discoveryManager =
+                    new PrinterDiscoveryManager(requireContext());
+
+            ArrayList<PrinterDiscoveryManager.DiscoveredPrinter> allPrinters = new ArrayList<>();
+
+            AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                    .setTitle(R.string.discover_title)
+                    .setMessage(getString(R.string.discover_scanning))
+                    .setCancelable(false)
+                    .create();
+            dialog.show();
+
+            discoveryManager.startDiscovery(new PrinterDiscoveryManager.DiscoveryListener() {
+                @Override
+                public void onPrinterFound(PrinterDiscoveryManager.DiscoveredPrinter printer) {
+                    if (isAdded()) {
+                        requireActivity().runOnUiThread(() -> {
+                            allPrinters.add(printer);
+                        });
+                    }
+                }
+
+                @Override
+                public void onDiscoveryComplete(List<PrinterDiscoveryManager.DiscoveredPrinter> printers) {
+                    if (!isAdded()) return;
+                    requireActivity().runOnUiThread(() -> {
+                        dialog.dismiss();
+                        discoveryManager.destroy();
+                        showDiscoveryResults(allPrinters);
+                    });
+                }
+
+                @Override
+                public void onDiscoveryFailed(String error) {
+                    if (!isAdded()) return;
+                    requireActivity().runOnUiThread(() -> {
+                        dialog.dismiss();
+                        discoveryManager.destroy();
+                        Toast.makeText(requireContext(),
+                                getString(R.string.discover_failed, error),
+                                Toast.LENGTH_LONG).show();
+                    });
+                }
+            });
+        }
+
+        private void showDiscoveryResults(List<PrinterDiscoveryManager.DiscoveredPrinter> printers) {
+            if (printers.isEmpty()) {
+                new AlertDialog.Builder(requireContext())
+                        .setTitle(R.string.discover_title)
+                        .setMessage(R.string.discover_no_printers)
+                        .setPositiveButton(R.string.dialog_ok, null)
+                        .show();
+                return;
+            }
+
+            String[] items = new String[printers.size()];
+            for (int i = 0; i < printers.size(); i++) {
+                PrinterDiscoveryManager.DiscoveredPrinter p = printers.get(i);
+                items[i] = p.name + "\n" + p.host + ":" + p.port;
+            }
+
+            new AlertDialog.Builder(requireContext())
+                    .setTitle(R.string.discover_select)
+                    .setItems(items, (dialog, which) -> {
+                        PrinterDiscoveryManager.DiscoveredPrinter selected = printers.get(which);
+                        SharedPreferences prefs = PreferenceManager
+                                .getDefaultSharedPreferences(requireContext());
+                        prefs.edit()
+                                .putString("printer_ip", selected.host)
+                                .putString("printer_name", selected.name)
+                                .apply();
+
+                        EditTextPreference namePref = findPreference("printer_name");
+                        EditTextPreference ipPref = findPreference("printer_ip");
+                        if (namePref != null) namePref.setText(selected.name);
+                        if (ipPref != null) ipPref.setText(selected.host);
+
+                        Toast.makeText(requireContext(),
+                                getString(R.string.discover_configured, selected.name),
+                                Toast.LENGTH_SHORT).show();
+                    })
+                    .setNegativeButton(R.string.dialog_cancel, null)
+                    .show();
+        }
+
         private void runNetworkTest() {
             String ip = getPrinterIp();
 
             AlertDialog dialog = new AlertDialog.Builder(requireContext())
-                    .setTitle("Network Test")
-                    .setMessage("Testing connection to " + ip + "...")
+                    .setTitle(R.string.net_test_title)
+                    .setMessage(getString(R.string.net_test_testing, ip))
                     .setCancelable(false)
                     .create();
             dialog.show();
@@ -160,15 +257,14 @@ public class SettingsActivity extends AppCompatActivity {
                 StringBuilder result = new StringBuilder();
                 boolean success = true;
 
-                result.append("Target: ").append(ip).append("\n\n");
+                result.append(getString(R.string.net_test_target, ip));
                 try {
                     long start = System.currentTimeMillis();
                     InetAddress addr = InetAddress.getByName(ip);
                     long elapsed = System.currentTimeMillis() - start;
-                    result.append("[OK] DNS resolved: ").append(addr.getHostAddress())
-                            .append(" (").append(elapsed).append(" ms)\n");
+                    result.append(getString(R.string.net_test_dns_ok, addr.getHostAddress(), elapsed));
                 } catch (Exception e) {
-                    result.append("[FAIL] DNS resolution failed: ").append(e.getMessage()).append("\n");
+                    result.append(getString(R.string.net_test_dns_fail, e.getMessage()));
                     success = false;
                 }
 
@@ -178,13 +274,12 @@ public class SettingsActivity extends AppCompatActivity {
                         boolean reachable = InetAddress.getByName(ip).isReachable(CONNECT_TIMEOUT_MS);
                         long elapsed = System.currentTimeMillis() - start;
                         if (reachable) {
-                            result.append("[OK] Ping: reachable (").append(elapsed).append(" ms)\n");
+                            result.append(getString(R.string.net_test_ping_ok, elapsed));
                         } else {
-                            result.append("[WARN] Ping: no ICMP reply (").append(elapsed)
-                                    .append(" ms)\n");
+                            result.append(getString(R.string.net_test_ping_warn, elapsed));
                         }
                     } catch (Exception e) {
-                        result.append("[WARN] Ping failed: ").append(e.getMessage()).append("\n");
+                        result.append(getString(R.string.net_test_ping_fail, e.getMessage()));
                     }
                 }
 
@@ -194,9 +289,9 @@ public class SettingsActivity extends AppCompatActivity {
                         long start = System.currentTimeMillis();
                         socket.connect(new InetSocketAddress(ip, 9100), CONNECT_TIMEOUT_MS);
                         long elapsed = System.currentTimeMillis() - start;
-                        result.append("[OK] Port 9100 open (").append(elapsed).append(" ms)\n");
+                        result.append(getString(R.string.net_test_port9100_ok, elapsed));
                     } catch (IOException e) {
-                        result.append("[WARN] Port 9100 closed\n");
+                        result.append(getString(R.string.net_test_port9100_warn));
                     } finally {
                         try { socket.close(); } catch (IOException ignored) {}
                     }
@@ -208,11 +303,9 @@ public class SettingsActivity extends AppCompatActivity {
                         long start = System.currentTimeMillis();
                         socket.connect(new InetSocketAddress(ip, IPP_PORT), CONNECT_TIMEOUT_MS);
                         long elapsed = System.currentTimeMillis() - start;
-                        result.append("[OK] IPP port ").append(IPP_PORT)
-                                .append(" open (").append(elapsed).append(" ms)\n");
+                        result.append(getString(R.string.net_test_ipp_ok, IPP_PORT, elapsed));
                     } catch (IOException e) {
-                        result.append("[FAIL] IPP port ").append(IPP_PORT)
-                                .append(" closed: ").append(e.getMessage()).append("\n");
+                        result.append(getString(R.string.net_test_ipp_fail, IPP_PORT, e.getMessage()));
                         success = false;
                     } finally {
                         try { socket.close(); } catch (IOException ignored) {}
@@ -221,18 +314,20 @@ public class SettingsActivity extends AppCompatActivity {
 
                 result.append("\n");
                 if (success) {
-                    result.append("Printer is reachable and ready.");
+                    result.append(getString(R.string.net_test_ready));
                 } else {
-                    result.append("Could not reach printer. Check IP and that the printer is on.");
+                    result.append(getString(R.string.net_test_unreachable));
                 }
 
                 String finalMessage = result.toString();
-                requireActivity().runOnUiThread(() -> {
-                    dialog.setMessage(finalMessage);
-                    dialog.setCancelable(true);
-                    dialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
-                            (d, w) -> d.dismiss());
-                });
+                if (isAdded()) {
+                    requireActivity().runOnUiThread(() -> {
+                        dialog.setMessage(finalMessage);
+                        dialog.setCancelable(true);
+                        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.dialog_ok),
+                                (d, w) -> d.dismiss());
+                    });
+                }
             }).start();
         }
 
@@ -240,8 +335,8 @@ public class SettingsActivity extends AppCompatActivity {
             String ip = getPrinterIp();
 
             AlertDialog dialog = new AlertDialog.Builder(requireContext())
-                    .setTitle("Print Test Page")
-                    .setMessage("Sending test page to " + ip + "...")
+                    .setTitle(R.string.print_test_title)
+                    .setMessage(getString(R.string.print_test_sending, ip))
                     .setCancelable(false)
                     .create();
             dialog.show();
@@ -253,23 +348,23 @@ public class SettingsActivity extends AppCompatActivity {
                     IppClient.IppResult result = IppClient.sendPrintJob(ip, urfData, "Test Page");
 
                     if (result.success) {
-                        resultMessage = "Test page sent successfully!\n\n"
-                                + urfData.length + " bytes sent via IPP to " + ip + "\n\n"
-                                + "The printer should produce a page shortly.";
+                        resultMessage = getString(R.string.print_test_success, urfData.length, ip);
                     } else {
-                        resultMessage = "IPP request failed:\n" + result.message;
+                        resultMessage = getString(R.string.print_test_ipp_failed, result.message);
                     }
                 } catch (IOException e) {
-                    resultMessage = "Failed to send test page:\n\n" + e.getMessage();
+                    resultMessage = getString(R.string.print_test_failed, e.getMessage());
                 }
 
                 String finalMessage = resultMessage;
-                requireActivity().runOnUiThread(() -> {
-                    dialog.setMessage(finalMessage);
-                    dialog.setCancelable(true);
-                    dialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
-                            (d, w) -> d.dismiss());
-                });
+                if (isAdded()) {
+                    requireActivity().runOnUiThread(() -> {
+                        dialog.setMessage(finalMessage);
+                        dialog.setCancelable(true);
+                        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.dialog_ok),
+                                (d, w) -> d.dismiss());
+                    });
+                }
             }).start();
         }
 
@@ -297,9 +392,6 @@ public class SettingsActivity extends AppCompatActivity {
                                     android.os.CancellationSignal cancellationSignal,
                                     WriteResultCallback callback) {
                     try {
-                        // Load test PDF and write it
-                        InputStream in = requireContext().getAssets().open("test_page.urf");
-                        // Actually we need a real PDF. Generate a minimal one.
                         byte[] pdf = generateMinimalPdf();
                         FileOutputStream out = new FileOutputStream(destination.getFileDescriptor());
                         out.write(pdf);
@@ -364,7 +456,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         private void showLogViewer() {
             String logs = PrintLog.exportAsText();
-            if (logs.isEmpty()) logs = "(no log entries)";
+            if (logs.isEmpty()) logs = getString(R.string.logs_empty);
 
             TextView textView = new TextView(requireContext());
             textView.setText(logs);
@@ -375,19 +467,19 @@ public class SettingsActivity extends AppCompatActivity {
             textView.setVerticalScrollBarEnabled(true);
 
             new AlertDialog.Builder(requireContext())
-                    .setTitle("Debug Logs")
+                    .setTitle(R.string.logs_title)
                     .setView(textView)
-                    .setPositiveButton("Close", null)
-                    .setNeutralButton("Copy", (d, w) -> {
+                    .setPositiveButton(R.string.dialog_close, null)
+                    .setNeutralButton(R.string.dialog_copy, (d, w) -> {
                         ClipboardManager cm = (ClipboardManager) requireContext()
                                 .getSystemService(Context.CLIPBOARD_SERVICE);
                         cm.setPrimaryClip(ClipData.newPlainText("Print Logs",
                                 PrintLog.exportAsText()));
-                        Toast.makeText(requireContext(), "Logs copied", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), R.string.logs_copied, Toast.LENGTH_SHORT).show();
                     })
-                    .setNegativeButton("Clear", (d, w) -> {
+                    .setNegativeButton(R.string.dialog_clear, (d, w) -> {
                         PrintLog.clear();
-                        Toast.makeText(requireContext(), "Logs cleared", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), R.string.logs_cleared, Toast.LENGTH_SHORT).show();
                     })
                     .show();
         }
@@ -403,8 +495,8 @@ public class SettingsActivity extends AppCompatActivity {
             };
 
             AlertDialog dialog = new AlertDialog.Builder(requireContext())
-                    .setTitle("Print Test Suite")
-                    .setMessage("Starting test suite (5 documents)...")
+                    .setTitle(R.string.test_suite_title)
+                    .setMessage(getString(R.string.test_suite_starting))
                     .setCancelable(false)
                     .create();
             dialog.show();
@@ -427,8 +519,10 @@ public class SettingsActivity extends AppCompatActivity {
                         }
 
                         int msgNum = t + 1;
-                        requireActivity().runOnUiThread(() ->
-                                dialog.setMessage("Test " + msgNum + "/" + testFiles.length + ": " + name));
+                        if (isAdded()) {
+                            requireActivity().runOnUiThread(() ->
+                                    dialog.setMessage(getString(R.string.test_suite_progress, msgNum, testFiles.length, name)));
+                        }
 
                         android.os.ParcelFileDescriptor pfd = android.os.ParcelFileDescriptor.open(
                                 pdfFile, android.os.ParcelFileDescriptor.MODE_READ_ONLY);
@@ -440,7 +534,7 @@ public class SettingsActivity extends AppCompatActivity {
                         for (int i = 0; i < pageCount; i++) {
                             android.graphics.pdf.PdfRenderer.Page page = renderer.openPage(i);
                             android.graphics.Bitmap bmp = android.graphics.Bitmap.createBitmap(
-                                    UrfEncoder.A4_WIDTH_600, UrfEncoder.A4_HEIGHT_600,
+                                     UrfEncoder.A4_WIDTH_600, UrfEncoder.A4_HEIGHT_600,
                                     android.graphics.Bitmap.Config.ARGB_8888);
                             bmp.eraseColor(0xFFFFFFFF);
                             page.render(bmp, null, null,
@@ -477,14 +571,15 @@ public class SettingsActivity extends AppCompatActivity {
                     results.append(String.format("%d. %s: %s\n", t + 1, name, status));
                 }
 
-                String summary = String.format(
-                        "Results: %d passed, %d failed\n\n%s", passed, failed, results);
-                requireActivity().runOnUiThread(() -> {
-                    dialog.setMessage(summary);
-                    dialog.setCancelable(true);
-                    dialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
-                            (d, w) -> d.dismiss());
-                });
+                String summary = getString(R.string.test_suite_summary, passed, failed, results.toString());
+                if (isAdded()) {
+                    requireActivity().runOnUiThread(() -> {
+                        dialog.setMessage(summary);
+                        dialog.setCancelable(true);
+                        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.dialog_ok),
+                                (d, w) -> d.dismiss());
+                    });
+                }
             }).start();
         }
 
