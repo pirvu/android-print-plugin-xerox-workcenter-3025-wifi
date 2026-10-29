@@ -27,9 +27,9 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Build Debug APK
+      - name: Test, lint, and build Debug APK
         run: |
-          ./gradlew assembleDebug \
+          ./gradlew testDebugUnitTest lintDebug assembleDebug assembleDebugAndroidTest \
             -PVERSION_NAME=dev-${GITHUB_SHA::7} \
             -PVERSION_CODE=${{ github.run_number }}
 

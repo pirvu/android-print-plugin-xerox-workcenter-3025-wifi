@@ -8,8 +8,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.Socket;
+import java.net.InetSocketAddress;
+import java.io.BufferedInputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ScheduledFuture;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -20,7 +24,7 @@ public class WsdScanClient {
     private static final int WSD_PORT = 8018;
     private static final String WSD_PATH = "/wsd/scan";
     private static final int CONNECT_TIMEOUT = 5000;
-    private static final int READ_TIMEOUT = 60000;
+    private static final int READ_TIMEOUT = 120000;
 
     private static final String NS_SOAP = "http://www.w3.org/2003/05/soap-envelope";
     private static final String NS_WSA = "http://schemas.xmlsoap.org/ws/2004/08/addressing";
@@ -73,6 +77,10 @@ public class WsdScanClient {
     // --- Public API ---
 
     public static ScannerStatus getScannerStatus(String ip) {
+        return getScannerStatus(ip, new JobControl());
+    }
+
+    static ScannerStatus getScannerStatus(String ip, JobControl control) {
         PrintLog.i(TAG, "Getting scanner status from " + ip);
         try {
             String body = "<wscn:GetScannerElementsRequest xmlns:wscn=\"" + NS_SCAN + "\">"
@@ -81,7 +89,7 @@ public class WsdScanClient {
                     + "</wscn:RequestedElements>"
                     + "</wscn:GetScannerElementsRequest>";
 
-            String response = sendSoapRequest(ip, "GetScannerElements", body);
+            String response = sendSoapRequest(ip, "GetScannerElements", body, control);
             String state = extractXmlValue(response, "ScannerState");
             PrintLog.i(TAG, "Scanner state: " + state);
             return new ScannerStatus(state != null ? state : "Unknown", null);
@@ -92,6 +100,10 @@ public class WsdScanClient {
     }
 
     public static ScannerCapabilities getScannerCapabilities(String ip) {
+        return getScannerCapabilities(ip, new JobControl());
+    }
+
+    static ScannerCapabilities getScannerCapabilities(String ip, JobControl control) {
         PrintLog.i(TAG, "Getting scanner capabilities from " + ip);
         ScannerCapabilities caps = new ScannerCapabilities();
         try {
@@ -101,7 +113,7 @@ public class WsdScanClient {
                     + "</wscn:RequestedElements>"
                     + "</wscn:GetScannerElementsRequest>";
 
-            String response = sendSoapRequest(ip, "GetScannerElements", body);
+            String response = sendSoapRequest(ip, "GetScannerElements", body, control);
             parseCapabilities(response, caps);
             PrintLog.i(TAG, "Capabilities: res=" + caps.resolutions
                     + " colors=" + caps.colorModes + " formats=" + caps.formats);
@@ -112,9 +124,19 @@ public class WsdScanClient {
     }
 
     public static ScanJobResult createScanJob(String ip, ScanSettings settings) {
+        return createScanJob(ip, settings, new JobControl());
+    }
+
+    static ScanJobResult createScanJob(String ip, ScanSettings settings, JobControl control) {
         PrintLog.i(TAG, "Creating scan job: " + settings.resolution + " DPI, "
                 + settings.colorMode + ", " + settings.format);
         try {
+            if (!java.util.Arrays.asList(75, 100, 150, 200, 300).contains(settings.resolution)
+                    || !java.util.Arrays.asList("Grayscale8", "RGB24", "BlackAndWhite1").contains(settings.colorMode)
+                    || !java.util.Arrays.asList("jfif", "tiff-single-uncompressed").contains(settings.format)
+                    || !java.util.Arrays.asList("Auto", "Text", "Photo", "Mixed").contains(settings.contentType)) {
+                throw new IOException("Unsupported scan settings");
+            }
             String body = "<wscn:CreateScanJobRequest xmlns:wscn=\"" + NS_SCAN + "\">"
                     + "<wscn:ScanTicket>"
                     + "<wscn:JobDescription>"
@@ -154,13 +176,13 @@ public class WsdScanClient {
                     + "</wscn:ScanTicket>"
                     + "</wscn:CreateScanJobRequest>";
 
-            String response = sendSoapRequest(ip, "CreateScanJob", body);
+            String response = sendSoapRequest(ip, "CreateScanJob", body, control);
             String jobIdStr = extractXmlValue(response, "JobId");
             String jobToken = extractXmlValue(response, "JobToken");
 
             if (jobIdStr != null && jobToken != null) {
                 int jobId = Integer.parseInt(jobIdStr);
-                PrintLog.i(TAG, "Scan job created: id=" + jobId + " token=" + jobToken);
+                PrintLog.i(TAG, "Scan job created: id=" + jobId);
                 return new ScanJobResult(true, jobId, jobToken, null);
             } else {
                 String fault = extractXmlValue(response, "Text");
@@ -176,6 +198,10 @@ public class WsdScanClient {
     }
 
     public static byte[] retrieveImage(String ip, int jobId, String imageUri) {
+        return retrieveImage(ip, jobId, imageUri, new JobControl());
+    }
+
+    static byte[] retrieveImage(String ip, int jobId, String imageUri, JobControl control) {
         PrintLog.i(TAG, "Retrieving image for job " + jobId);
         try {
             String body = "<wscn:RetrieveImageRequest xmlns:wscn=\"" + NS_SCAN + "\">"
@@ -183,10 +209,10 @@ public class WsdScanClient {
                     + "<wscn:DocumentName>scan.jpg</wscn:DocumentName>"
                     + "</wscn:DocumentDescription>"
                     + "<wscn:JobId>" + jobId + "</wscn:JobId>"
-                    + "<wscn:JobToken>" + imageUri + "</wscn:JobToken>"
+                    + "<wscn:JobToken>" + escapeXml(imageUri) + "</wscn:JobToken>"
                     + "</wscn:RetrieveImageRequest>";
 
-            byte[] rawResponse = sendSoapRequestRaw(ip, "RetrieveImage", body);
+            byte[] rawResponse = sendSoapRequestRaw(ip, "RetrieveImage", body, control);
             byte[] imageData = extractImageFromResponse(rawResponse);
 
             if (imageData != null && imageData.length > 0) {
@@ -204,14 +230,16 @@ public class WsdScanClient {
 
     // --- SOAP transport ---
 
-    private static String sendSoapRequest(String ip, String operation, String bodyContent)
+    private static String sendSoapRequest(String ip, String operation, String bodyContent, JobControl control)
             throws IOException {
-        byte[] raw = sendSoapRequestRaw(ip, operation, bodyContent);
+        byte[] raw = sendSoapRequestRaw(ip, operation, bodyContent, control);
         return new String(raw, "UTF-8");
     }
 
-    private static byte[] sendSoapRequestRaw(String ip, String operation, String bodyContent)
+    private static byte[] sendSoapRequestRaw(String ip, String operation, String bodyContent, JobControl control)
             throws IOException {
+        control.check();
+        LocalPrinterAddress.parse(ip);
         String action = ACTION_PREFIX + operation;
         String messageId = "urn:uuid:" + UUID.randomUUID();
 
@@ -229,43 +257,39 @@ public class WsdScanClient {
                 + "<soap:Body>" + bodyContent + "</soap:Body>"
                 + "</soap:Envelope>";
 
-        URL url = new URL("http://" + ip + ":" + WSD_PORT + WSD_PATH);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type",
-                "application/soap+xml; charset=utf-8; action=\"" + action + "\"");
-        conn.setConnectTimeout(CONNECT_TIMEOUT);
-        conn.setReadTimeout(READ_TIMEOUT);
-        conn.setDoOutput(true);
-
-        OutputStream out = conn.getOutputStream();
-        out.write(soap.getBytes("UTF-8"));
-        out.flush();
-        out.close();
-
-        int status = conn.getResponseCode();
-        InputStream in = (status >= 200 && status < 300) ? conn.getInputStream() : conn.getErrorStream();
-
-        ByteArrayOutputStream buf = new ByteArrayOutputStream();
-        byte[] chunk = new byte[8192];
-        int len;
-        while ((len = in.read(chunk)) != -1) {
-            buf.write(chunk, 0, len);
+        byte[] request = soap.getBytes(StandardCharsets.UTF_8);
+        try (Socket socket = new Socket()) {
+            control.attach(socket);
+            ScheduledFuture<?> deadline = IppClient.closeAfter(socket, 180000);
+            try {
+                socket.connect(new InetSocketAddress(LocalPrinterAddress.parse(ip), WSD_PORT), CONNECT_TIMEOUT);
+                socket.setSoTimeout(READ_TIMEOUT);
+                String header = "POST " + WSD_PATH + " HTTP/1.1\r\nHost: " + ip + ":" + WSD_PORT
+                        + "\r\nContent-Type: application/soap+xml; charset=utf-8; action=\"" + action
+                        + "\"\r\nContent-Length: " + request.length + "\r\nConnection: close\r\n\r\n";
+                OutputStream out = socket.getOutputStream();
+                out.write(header.getBytes(StandardCharsets.US_ASCII));
+                out.write(request);
+                out.flush();
+                HttpResponseReader response = HttpResponseReader.read(new BufferedInputStream(socket.getInputStream()),
+                        operation.equals("RetrieveImage") ? 32 * 1024 * 1024 : 1024 * 1024);
+                if (response.status != 200) throw new IOException("WSD HTTP " + response.status);
+                return response.body;
+            } finally { deadline.cancel(false); control.detach(socket); }
         }
-        in.close();
-        conn.disconnect();
+    }
 
-        if (status >= 400) {
-            throw new IOException("WSD HTTP " + status + ": " + buf.toString("UTF-8").substring(0, Math.min(200, buf.size())));
-        }
-
-        return buf.toByteArray();
+    static String escapeXml(String text) {
+        if (text == null) return "";
+        return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+                .replace("\"", "&quot;").replace("'", "&apos;");
     }
 
     // --- XML parsing helpers ---
 
     private static String extractXmlValue(String xml, String localName) {
         try {
+            if (xml.contains("<!DOCTYPE") || xml.contains("<!ENTITY")) throw new IOException("DTD/entity not allowed");
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(true);
             XmlPullParser parser = factory.newPullParser();
@@ -285,6 +309,7 @@ public class WsdScanClient {
 
     private static void parseCapabilities(String xml, ScannerCapabilities caps) {
         try {
+            if (xml.contains("<!DOCTYPE") || xml.contains("<!ENTITY")) throw new IOException("DTD/entity not allowed");
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(true);
             XmlPullParser parser = factory.newPullParser();
@@ -329,98 +354,7 @@ public class WsdScanClient {
         }
     }
 
-    /**
-     * Extract image data from WSD RetrieveImage response.
-     * The image may be embedded as XOP/MTOM (MIME multipart) or inline base64.
-     * We detect MIME boundary and extract the binary part.
-     */
-    private static byte[] extractImageFromResponse(byte[] response) {
-        // Check for MIME multipart (MTOM/XOP)
-        // Look for a MIME boundary pattern
-        String header = new String(response, 0, Math.min(response.length, 500));
-
-        if (header.contains("--MIMEBoundary") || header.contains("--_DPWS")
-                || header.contains("Content-Type: multipart")) {
-            return extractMtomImage(response);
-        }
-
-        // Check for XOP include reference — image might be in a subsequent MIME part
-        if (header.contains("xop:Include")) {
-            return extractMtomImage(response);
-        }
-
-        // If no MTOM, the image might be directly in the SOAP body
-        // Look for JFIF header (JPEG: FF D8 FF)
-        int jpegStart = indexOf(response, new byte[]{(byte) 0xFF, (byte) 0xD8, (byte) 0xFF});
-        if (jpegStart >= 0) {
-            byte[] image = new byte[response.length - jpegStart];
-            System.arraycopy(response, jpegStart, image, 0, image.length);
-            return image;
-        }
-
-        // Look for TIFF header (49 49 2A 00 or 4D 4D 00 2A)
-        int tiffStart = indexOf(response, new byte[]{0x49, 0x49, 0x2A, 0x00});
-        if (tiffStart < 0) tiffStart = indexOf(response, new byte[]{0x4D, 0x4D, 0x00, 0x2A});
-        if (tiffStart >= 0) {
-            byte[] image = new byte[response.length - tiffStart];
-            System.arraycopy(response, tiffStart, image, 0, image.length);
-            return image;
-        }
-
-        PrintLog.w(TAG, "Could not find image data in response");
-        return null;
-    }
-
-    private static byte[] extractMtomImage(byte[] response) {
-        // Find the MIME boundary (starts with --)
-        String text = new String(response, 0, Math.min(response.length, 1000));
-        int boundaryIdx = text.indexOf("--_DPWS");
-        if (boundaryIdx < 0) boundaryIdx = text.indexOf("--MIMEBoundary");
-        if (boundaryIdx < 0) {
-            boundaryIdx = text.indexOf("--");
-            if (boundaryIdx < 0) return null;
-        }
-
-        // Find the end of the boundary line
-        int lineEnd = text.indexOf("\r\n", boundaryIdx);
-        if (lineEnd < 0) return null;
-        String boundary = text.substring(boundaryIdx, lineEnd);
-
-        // Find the second MIME part (first is SOAP XML, second is binary image)
-        byte[] boundaryBytes = boundary.getBytes();
-        int secondPart = indexOf(response, boundaryBytes, lineEnd + 2);
-        if (secondPart < 0) return null;
-
-        // Skip past the boundary and headers to find the binary data
-        int headersEnd = indexOf(response, "\r\n\r\n".getBytes(), secondPart);
-        if (headersEnd < 0) return null;
-        int dataStart = headersEnd + 4;
-
-        // Find the closing boundary
-        int dataEnd = indexOf(response, boundaryBytes, dataStart);
-        if (dataEnd < 0) dataEnd = response.length;
-        // Remove trailing \r\n before boundary
-        if (dataEnd >= 2 && response[dataEnd - 1] == '\n' && response[dataEnd - 2] == '\r') {
-            dataEnd -= 2;
-        }
-
-        byte[] image = new byte[dataEnd - dataStart];
-        System.arraycopy(response, dataStart, image, 0, image.length);
-        return image;
-    }
-
-    private static int indexOf(byte[] data, byte[] pattern) {
-        return indexOf(data, pattern, 0);
-    }
-
-    private static int indexOf(byte[] data, byte[] pattern, int fromIndex) {
-        for (int i = fromIndex; i <= data.length - pattern.length; i++) {
-            boolean match = true;
-            for (int j = 0; j < pattern.length; j++) {
-                if (data[i + j] != pattern[j]) { match = false; break; }
-            }
-            if (match) return i;
-        }
-        return -1;
+    static byte[] extractImageFromResponse(byte[] response) {
+        return WsdImageReader.extract(response);
     }
 }

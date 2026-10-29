@@ -1,14 +1,11 @@
 package com.xerox3025.printplugin;
 
-import android.content.ContentValues;
+import android.content.ClipData;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -37,6 +34,39 @@ public class ScanActivity extends AppCompatActivity {
     private TextView textStatus;
     private ImageView imagePreview;
     private View buttonsRow;
+
+    private final JobControl control = new JobControl();
+    private Bitmap previewBitmap;
+    private byte[] pendingSave;
+    private final androidx.activity.result.ActivityResultLauncher<String> saveDocument =
+            registerForActivityResult(new androidx.activity.result.contract.ActivityResultContracts.CreateDocument("image/jpeg"), uri -> {
+                byte[] data = pendingSave;
+                pendingSave = null;
+                if (uri == null || data == null) return;
+                new Thread(() -> {
+                    String message;
+                    try (OutputStream out = getContentResolver().openOutputStream(uri)) {
+                        if (out == null) throw new IOException("Cannot open destination");
+                        out.write(data);
+                        message = "Scan saved";
+                    } catch (IOException | SecurityException e) { message = "Save failed: " + e.getMessage(); }
+                    String result = message;
+                    updateUi(() -> Toast.makeText(this, result, Toast.LENGTH_LONG).show());
+                }, "scan-save").start();
+            });
+
+    @Override protected void onDestroy() {
+        control.cancel();
+        imagePreview.setImageDrawable(null);
+        if (previewBitmap != null) previewBitmap.recycle();
+        lastScanData = null;
+        pendingSave = null;
+        super.onDestroy();
+    }
+
+    private void updateUi(Runnable action) {
+        runOnUiThread(() -> { if (!isFinishing() && !isDestroyed()) action.run(); });
+    }
 
     private byte[] lastScanData;
     private String lastScanFormat;
@@ -92,8 +122,8 @@ public class ScanActivity extends AppCompatActivity {
     private void checkScannerStatus() {
         textStatus.setText(R.string.scan_status_checking);
         new Thread(() -> {
-            WsdScanClient.ScannerStatus status = WsdScanClient.getScannerStatus(getPrinterIp());
-            runOnUiThread(() -> {
+            WsdScanClient.ScannerStatus status = WsdScanClient.getScannerStatus(getPrinterIp(), control);
+            updateUi(() -> {
                 if (status.isIdle()) {
                     textStatus.setText(R.string.scan_status_ready);
                 } else if ("Error".equals(status.state)) {
@@ -119,31 +149,47 @@ public class ScanActivity extends AppCompatActivity {
         textStatus.setText(R.string.scan_status_scanning);
         buttonsRow.setVisibility(View.GONE);
         imagePreview.setImageBitmap(null);
+        if (previewBitmap != null) { previewBitmap.recycle(); previewBitmap = null; }
+        lastScanData = null;
         findViewById(R.id.btn_scan).setEnabled(false);
 
         new Thread(() -> {
             // Step 1: Create scan job
-            WsdScanClient.ScanJobResult job = WsdScanClient.createScanJob(ip, settings);
+            WsdScanClient.ScanJobResult job = WsdScanClient.createScanJob(ip, settings, control);
             if (!job.success) {
-                runOnUiThread(() -> {
+                updateUi(() -> {
                     textStatus.setText(getString(R.string.scan_status_error, job.error));
                     findViewById(R.id.btn_scan).setEnabled(true);
                 });
                 return;
             }
 
-            runOnUiThread(() -> textStatus.setText(R.string.scan_status_retrieving));
+            updateUi(() -> textStatus.setText(R.string.scan_status_retrieving));
 
             // Step 2: Retrieve image — this call blocks until the scanner finishes
-            byte[] imageData = WsdScanClient.retrieveImage(ip, job.jobId, job.imageUri);
+            byte[] imageData = WsdScanClient.retrieveImage(ip, job.jobId, job.imageUri, control);
 
             byte[] finalImageData = imageData;
-            runOnUiThread(() -> {
+            updateUi(() -> {
                 findViewById(R.id.btn_scan).setEnabled(true);
                 if (finalImageData != null && finalImageData.length > 0) {
                     lastScanData = finalImageData;
-                    Bitmap bmp = BitmapFactory.decodeByteArray(finalImageData, 0, finalImageData.length);
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inJustDecodeBounds = true;
+                    BitmapFactory.decodeByteArray(finalImageData, 0, finalImageData.length, options);
+                    if (options.outWidth <= 0 || options.outHeight <= 0
+                            || (long)options.outWidth * options.outHeight > 25000000L) {
+                        textStatus.setText(R.string.scan_status_decode_error);
+                        lastScanData = null;
+                        return;
+                    }
+                    options.inSampleSize = 1;
+                    while (options.outWidth / options.inSampleSize > 1600
+                            || options.outHeight / options.inSampleSize > 1600) options.inSampleSize *= 2;
+                    options.inJustDecodeBounds = false;
+                    Bitmap bmp = BitmapFactory.decodeByteArray(finalImageData, 0, finalImageData.length, options);
                     if (bmp != null) {
+                        previewBitmap = bmp;
                         imagePreview.setImageBitmap(bmp);
                         buttonsRow.setVisibility(View.VISIBLE);
                         textStatus.setText(getString(R.string.scan_status_done,
@@ -164,42 +210,8 @@ public class ScanActivity extends AppCompatActivity {
         String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
         String filename = "Scan_" + timestamp + "." + lastScanFormat;
 
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                // Android 10+ use MediaStore
-                ContentValues values = new ContentValues();
-                values.put(MediaStore.MediaColumns.DISPLAY_NAME, filename);
-                values.put(MediaStore.MediaColumns.MIME_TYPE,
-                        "jpg".equals(lastScanFormat) ? "image/jpeg" : "image/tiff");
-                values.put(MediaStore.MediaColumns.RELATIVE_PATH,
-                        Environment.DIRECTORY_DOWNLOADS);
-
-                Uri uri = getContentResolver().insert(
-                        MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
-                if (uri != null) {
-                    OutputStream out = getContentResolver().openOutputStream(uri);
-                    if (out != null) {
-                        out.write(lastScanData);
-                        out.close();
-                    }
-                    Toast.makeText(this,
-                            getString(R.string.scan_saved, filename), Toast.LENGTH_LONG).show();
-                }
-            } else {
-                // Older Android — write to Downloads directly
-                File dir = Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_DOWNLOADS);
-                File file = new File(dir, filename);
-                FileOutputStream fos = new FileOutputStream(file);
-                fos.write(lastScanData);
-                fos.close();
-                Toast.makeText(this,
-                        getString(R.string.scan_saved, file.getAbsolutePath()),
-                        Toast.LENGTH_LONG).show();
-            }
-        } catch (IOException e) {
-            Toast.makeText(this, "Save failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
-        }
+        pendingSave = lastScanData;
+        saveDocument.launch(filename);
     }
 
     private void shareImage() {
@@ -208,10 +220,14 @@ public class ScanActivity extends AppCompatActivity {
         try {
             // Write to cache for sharing
             String filename = "scan." + lastScanFormat;
-            File cacheFile = new File(getCacheDir(), filename);
-            FileOutputStream fos = new FileOutputStream(cacheFile);
-            fos.write(lastScanData);
-            fos.close();
+            File scans = new File(getCacheDir(), "scans");
+            if (!scans.isDirectory() && !scans.mkdirs()) throw new IOException("Cannot create scan directory");
+            File[] old = scans.listFiles();
+            if (old != null) for (File f : old) {
+                if (System.currentTimeMillis() - f.lastModified() > 86400000L) f.delete();
+            }
+            File cacheFile = File.createTempFile("scan_", "." + lastScanFormat, scans);
+            try (FileOutputStream fos = new FileOutputStream(cacheFile)) { fos.write(lastScanData); }
 
             Uri uri = FileProvider.getUriForFile(this,
                     getPackageName() + ".fileprovider", cacheFile);
@@ -219,6 +235,7 @@ public class ScanActivity extends AppCompatActivity {
             Intent share = new Intent(Intent.ACTION_SEND);
             share.setType("jpg".equals(lastScanFormat) ? "image/jpeg" : "image/tiff");
             share.putExtra(Intent.EXTRA_STREAM, uri);
+            share.setClipData(ClipData.newRawUri("scan", uri));
             share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivity(Intent.createChooser(share, getString(R.string.scan_share_title)));
         } catch (Exception e) {
