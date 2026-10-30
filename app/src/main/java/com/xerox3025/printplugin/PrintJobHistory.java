@@ -22,7 +22,7 @@ public class PrintJobHistory {
     public static class JobRecord {
         public final String jobName;
         public final long timestamp;
-        public final String status; // COMPLETED, FAILED, CANCELLED
+        public final String status; // ACCEPTED, UNKNOWN, FAILED, CANCELLED (legacy: COMPLETED)
         public final String detail;
         public final int pageCount;
 
@@ -61,7 +61,7 @@ public class PrintJobHistory {
         }
     }
 
-    public static void addJob(Context context, JobRecord record) {
+    public static synchronized void addJob(Context context, JobRecord record) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         try {
             JSONArray arr = new JSONArray(prefs.getString(KEY_JOBS, "[]"));
@@ -78,7 +78,7 @@ public class PrintJobHistory {
         }
     }
 
-    public static List<JobRecord> getHistory(Context context) {
+    public static synchronized List<JobRecord> getHistory(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         List<JobRecord> list = new ArrayList<>();
         try {
@@ -92,7 +92,7 @@ public class PrintJobHistory {
         return list;
     }
 
-    public static void clearHistory(Context context) {
+    public static synchronized void clearHistory(Context context) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                 .edit().remove(KEY_JOBS).apply();
     }

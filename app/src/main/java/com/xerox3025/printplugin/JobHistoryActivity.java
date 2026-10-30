@@ -94,6 +94,7 @@ public class JobHistoryActivity extends AppCompatActivity {
             holder.status.setText(job.status);
 
             switch (job.status) {
+                case "ACCEPTED":
                 case "COMPLETED":
                     holder.status.setTextColor(Color.parseColor("#2E7D32"));
                     break;

@@ -72,13 +72,28 @@ public class SettingsActivity extends AppCompatActivity {
 
         private static final int CONNECT_TIMEOUT_MS = 5000;
         private static final int IPP_PORT = 631;
+        private Context appContext;
+        private final android.os.Handler uiHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+        private void postUi(Runnable update) {
+            uiHandler.post(() -> {
+                if (isAdded() && getActivity() != null && !getActivity().isFinishing()) update.run();
+            });
+        }
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            appContext = requireContext().getApplicationContext();
             setPreferencesFromResource(R.xml.preferences, rootKey);
 
             EditTextPreference ipPref = findPreference("printer_ip");
             if (ipPref != null) {
+                ipPref.setOnPreferenceChangeListener((preference, value) -> {
+                    try { LocalPrinterAddress.parse(String.valueOf(value)); return true; }
+                    catch (IOException e) {
+                        Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                        return false;
+                    }
+                });
                 ipPref.setOnBindEditTextListener(editText ->
                         editText.setInputType(InputType.TYPE_CLASS_TEXT
                                 | InputType.TYPE_TEXT_VARIATION_URI));
@@ -163,19 +178,19 @@ public class SettingsActivity extends AppCompatActivity {
                 result.append("Target: ").append(ip).append("\n\n");
                 try {
                     long start = System.currentTimeMillis();
-                    InetAddress addr = InetAddress.getByName(ip);
+                    InetAddress addr = LocalPrinterAddress.parse(ip);
                     long elapsed = System.currentTimeMillis() - start;
-                    result.append("[OK] DNS resolved: ").append(addr.getHostAddress())
+                    result.append("[OK] Local address: ").append(addr.getHostAddress())
                             .append(" (").append(elapsed).append(" ms)\n");
                 } catch (Exception e) {
-                    result.append("[FAIL] DNS resolution failed: ").append(e.getMessage()).append("\n");
+                    result.append("[FAIL] Invalid local address: ").append(e.getMessage()).append("\n");
                     success = false;
                 }
 
                 if (success) {
                     try {
                         long start = System.currentTimeMillis();
-                        boolean reachable = InetAddress.getByName(ip).isReachable(CONNECT_TIMEOUT_MS);
+                        boolean reachable = LocalPrinterAddress.parse(ip).isReachable(CONNECT_TIMEOUT_MS);
                         long elapsed = System.currentTimeMillis() - start;
                         if (reachable) {
                             result.append("[OK] Ping: reachable (").append(elapsed).append(" ms)\n");
@@ -221,13 +236,13 @@ public class SettingsActivity extends AppCompatActivity {
 
                 result.append("\n");
                 if (success) {
-                    result.append("Printer is reachable and ready.");
+                    result.append("IPP TCP port is reachable. This does not confirm printer readiness.");
                 } else {
                     result.append("Could not reach printer. Check IP and that the printer is on.");
                 }
 
                 String finalMessage = result.toString();
-                requireActivity().runOnUiThread(() -> {
+                postUi(() -> {
                     dialog.setMessage(finalMessage);
                     dialog.setCancelable(true);
                     dialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
@@ -253,18 +268,17 @@ public class SettingsActivity extends AppCompatActivity {
                     IppClient.IppResult result = IppClient.sendPrintJob(ip, urfData, "Test Page");
 
                     if (result.success) {
-                        resultMessage = "Test page sent successfully!\n\n"
-                                + urfData.length + " bytes sent via IPP to " + ip + "\n\n"
-                                + "The printer should produce a page shortly.";
+                        resultMessage = result.message + "\n\n"
+                                + urfData.length + " bytes sent via IPP to " + ip;
                     } else {
-                        resultMessage = "IPP request failed:\n" + result.message;
+                        resultMessage = result.message;
                     }
                 } catch (IOException e) {
                     resultMessage = "Failed to send test page:\n\n" + e.getMessage();
                 }
 
                 String finalMessage = resultMessage;
-                requireActivity().runOnUiThread(() -> {
+                postUi(() -> {
                     dialog.setMessage(finalMessage);
                     dialog.setCancelable(true);
                     dialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
@@ -278,15 +292,18 @@ public class SettingsActivity extends AppCompatActivity {
                     .getSystemService(Context.PRINT_SERVICE);
 
             PrintDocumentAdapter adapter = new PrintDocumentAdapter() {
+                private PrintAttributes attributes;
                 @Override
                 public void onLayout(android.print.PrintAttributes oldAttributes,
                                      android.print.PrintAttributes newAttributes,
                                      android.os.CancellationSignal cancellationSignal,
                                      LayoutResultCallback callback,
                                      android.os.Bundle extras) {
+                    if (cancellationSignal.isCanceled()) { callback.onLayoutCancelled(); return; }
+                    attributes = newAttributes;
                     PrintDocumentInfo info = new PrintDocumentInfo.Builder("test-document.pdf")
                             .setContentType(PrintDocumentInfo.CONTENT_TYPE_DOCUMENT)
-                            .setPageCount(1)
+                            .setPageCount(2)
                             .build();
                     callback.onLayoutFinished(info, true);
                 }
@@ -297,13 +314,12 @@ public class SettingsActivity extends AppCompatActivity {
                                     android.os.CancellationSignal cancellationSignal,
                                     WriteResultCallback callback) {
                     try {
-                        // Load test PDF and write it
-                        InputStream in = requireContext().getAssets().open("test_page.urf");
-                        // Actually we need a real PDF. Generate a minimal one.
-                        byte[] pdf = generateMinimalPdf();
-                        FileOutputStream out = new FileOutputStream(destination.getFileDescriptor());
-                        out.write(pdf);
-                        out.close();
+                        if (cancellationSignal.isCanceled()) { callback.onWriteCancelled(); return; }
+                        byte[] pdf = generateMinimalPdf(attributes);
+                        try (FileOutputStream out = new FileOutputStream(destination.getFileDescriptor())) {
+                            out.write(pdf);
+                        }
+                        if (cancellationSignal.isCanceled()) { callback.onWriteCancelled(); return; }
                         callback.onWriteFinished(new android.print.PageRange[]{android.print.PageRange.ALL_PAGES});
                     } catch (IOException e) {
                         callback.onWriteFailed(e.getMessage());
@@ -319,47 +335,32 @@ public class SettingsActivity extends AppCompatActivity {
                             .build());
         }
 
-        private byte[] generateMinimalPdf() {
-            // 2-page test PDF with varied content for print quality testing
-            String p1 = "BT\n" +
-                    "/F1 36 Tf 50 780 Td (Print Quality Test) Tj\n" +
-                    "/F1 12 Tf 0 -50 Td (Normal text at 12pt) Tj\n" +
-                    "0 -20 Td (The quick brown fox jumps over the lazy dog.) Tj\n" +
-                    "0 -20 Td (ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789) Tj\n" +
-                    "/F1 8 Tf 0 -30 Td (Small 8pt: Should be readable at 600 DPI) Tj\n" +
-                    "/F1 24 Tf 0 -40 Td (Large 24pt heading) Tj\n" +
-                    "/F1 12 Tf 0 -30 Td (Repeated patterns:) Tj\n" +
-                    "0 -20 Td (||||||||||||||||||||||||||||||||||||||||) Tj\n" +
-                    "0 -20 Td (========================================) Tj\n" +
-                    "0 -20 Td (########################################) Tj\n" +
-                    "/F1 14 Tf 0 -40 Td (Page 1 of 2) Tj\n" +
-                    "ET\n" +
-                    "0.5 w 50 430 m 545 430 l S\n";
-            String p2 = "BT\n" +
-                    "/F1 28 Tf 50 780 Td (Page 2: Layout Test) Tj\n" +
-                    "/F1 12 Tf 50 720 Td (Left aligned) Tj 350 720 Td (Right area) Tj\n" +
-                    "/F1 16 Tf 50 680 Td (Medium 16pt heading) Tj\n" +
-                    "/F1 10 Tf 50 650 Td (Body text below the heading for layout testing.) Tj\n" +
-                    "50 635 Td (Row 1: 100 200 300 400 500) Tj\n" +
-                    "50 620 Td (Row 2: 150 250 350 450 550) Tj\n" +
-                    "/F1 14 Tf 50 480 Td (End of test - Page 2 of 2) Tj\n" +
-                    "ET\n";
-            String pdf = "%PDF-1.4\n" +
-                    "1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n" +
-                    "2 0 obj<</Type/Pages/Kids[3 0 R 6 0 R]/Count 2>>endobj\n" +
-                    "3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]" +
-                    "/Contents 4 0 R/Resources<</Font<</F1 5 0 R>>>>>>endobj\n" +
-                    "4 0 obj<</Length " + p1.length() + ">>stream\n" + p1 + "endstream\nendobj\n" +
-                    "5 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>endobj\n" +
-                    "6 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]" +
-                    "/Contents 7 0 R/Resources<</Font<</F1 5 0 R>>>>>>endobj\n" +
-                    "7 0 obj<</Length " + p2.length() + ">>stream\n" + p2 + "endstream\nendobj\n" +
-                    "xref\n0 8\n" +
-                    "0000000000 65535 f \n0000000009 00000 n \n0000000058 00000 n \n" +
-                    "0000000115 00000 n \n0000000266 00000 n \n0000000900 00000 n \n" +
-                    "0000000977 00000 n \n0000001100 00000 n \n" +
-                    "trailer<</Size 8/Root 1 0 R>>\nstartxref\n1400\n%%EOF";
-            return pdf.getBytes();
+        private byte[] generateMinimalPdf(PrintAttributes attributes) throws IOException {
+            PrintAttributes.MediaSize media = attributes.getMediaSize();
+            int width = Math.round(media.getWidthMils() * 72f / 1000);
+            int height = Math.round(media.getHeightMils() * 72f / 1000);
+            android.graphics.pdf.PdfDocument document = new android.graphics.pdf.PdfDocument();
+            try {
+                android.graphics.Paint paint = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
+                for (int i = 0; i < 2; i++) {
+                    android.graphics.pdf.PdfDocument.Page page = document.startPage(
+                            new android.graphics.pdf.PdfDocument.PageInfo.Builder(width, height, i).create());
+                    paint.setColor(android.graphics.Color.BLACK);
+                    paint.setTextSize(22);
+                    page.getCanvas().drawText("Print quality test — page " + (i + 1) + " / 2", 36, 60, paint);
+                    paint.setTextSize(12);
+                    page.getCanvas().drawText("600 DPI: The quick brown fox jumps over the lazy dog.", 36, 92, paint);
+                    for (int band = 0; band < 6; band++) {
+                        int gray = band * 45;
+                        paint.setColor(android.graphics.Color.rgb(gray, gray, gray));
+                        page.getCanvas().drawRect(36, 120 + band * 35, width - 36, 145 + band * 35, paint);
+                    }
+                    document.finishPage(page);
+                }
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                document.writeTo(out);
+                return out.toByteArray();
+            } finally { document.close(); }
         }
 
         private void showLogViewer() {
@@ -411,75 +412,64 @@ public class SettingsActivity extends AppCompatActivity {
 
             new Thread(() -> {
                 StringBuilder results = new StringBuilder();
-                int passed = 0, failed = 0;
+                int accepted = 0, rejected = 0, unknown = 0, skipped = 0;
 
                 for (int t = 0; t < testFiles.length; t++) {
                     String name = testFiles[t];
                     String status;
                     try {
-                        String path = requireContext().getCacheDir() + "/" + name;
+                        String path = appContext.getCacheDir() + "/" + name;
                         java.io.File pdfFile = new java.io.File(path);
                         if (!pdfFile.exists()) {
                             status = "SKIP (file not found)";
-                            failed++;
-                            results.append(String.format("%d. %s: %s\n", t + 1, name, status));
+                            skipped++;
+                            results.append(String.format(java.util.Locale.getDefault(), "%d. %s: %s\n", t + 1, name, status));
                             continue;
                         }
 
                         int msgNum = t + 1;
-                        requireActivity().runOnUiThread(() ->
+                        postUi(() ->
                                 dialog.setMessage("Test " + msgNum + "/" + testFiles.length + ": " + name));
 
-                        android.os.ParcelFileDescriptor pfd = android.os.ParcelFileDescriptor.open(
-                                pdfFile, android.os.ParcelFileDescriptor.MODE_READ_ONLY);
-                        android.graphics.pdf.PdfRenderer renderer =
-                                new android.graphics.pdf.PdfRenderer(pfd);
-                        int pageCount = renderer.getPageCount();
-
-                        android.graphics.Bitmap[] pages = new android.graphics.Bitmap[pageCount];
-                        for (int i = 0; i < pageCount; i++) {
-                            android.graphics.pdf.PdfRenderer.Page page = renderer.openPage(i);
-                            android.graphics.Bitmap bmp = android.graphics.Bitmap.createBitmap(
-                                    UrfEncoder.A4_WIDTH_600, UrfEncoder.A4_HEIGHT_600,
-                                    android.graphics.Bitmap.Config.ARGB_8888);
-                            bmp.eraseColor(0xFFFFFFFF);
-                            page.render(bmp, null, null,
-                                    android.graphics.pdf.PdfRenderer.Page.RENDER_MODE_FOR_PRINT);
-                            page.close();
-                            pages[i] = bmp;
-                        }
-                        renderer.close();
-                        pfd.close();
-
-                        byte[] urfData = UrfEncoder.encode(pages);
-                        for (android.graphics.Bitmap bmp : pages) {
-                            if (bmp != null && !bmp.isRecycled()) bmp.recycle();
-                        }
-
-                        IppClient.IppResult result = IppClient.sendPrintJob(ip, urfData, name);
+                        java.io.File urfFile = java.io.File.createTempFile("test_", ".urf", appContext.getCacheDir());
+                        IppClient.IppResult result;
+                        int pageCount;
+                        long urfSize;
+                        try {
+                            JobControl control = new JobControl();
+                            pageCount = PdfSpooler.encode(pdfFile, urfFile, null, 1, control);
+                            urfSize = urfFile.length();
+                            result = IppClient.sendPrintJob(ip, urfFile, name, control);
+                        } finally { urfFile.delete(); }
 
                         if (result.success) {
-                            status = String.format("OK (%d pages, %d KB URF)",
-                                    pageCount, urfData.length / 1024);
-                            passed++;
+                            status = String.format(java.util.Locale.getDefault(), "ACCEPTED (%d pages, %d KB URF)",
+                                    pageCount, urfSize / 1024);
+                            accepted++;
                         } else {
-                            status = "IPP ERROR: " + result.message;
-                            failed++;
+                            status = result.outcome + ": " + result.message;
+                            if (result.outcome == IppClient.Outcome.UNKNOWN) unknown++;
+                            else rejected++;
                         }
 
+                        if (result.outcome == IppClient.Outcome.UNKNOWN) {
+                            results.append(name).append(": ").append(status).append("\nStopped; check printer output.\n");
+                            break;
+                        }
                         // Brief pause between jobs so printer can process
                         Thread.sleep(3000);
 
                     } catch (Exception e) {
                         status = "FAIL: " + e.getMessage();
-                        failed++;
+                        rejected++;
                     }
-                    results.append(String.format("%d. %s: %s\n", t + 1, name, status));
+                    results.append(String.format(java.util.Locale.getDefault(), "%d. %s: %s\n", t + 1, name, status));
                 }
 
-                String summary = String.format(
-                        "Results: %d passed, %d failed\n\n%s", passed, failed, results);
-                requireActivity().runOnUiThread(() -> {
+                String summary = String.format(java.util.Locale.getDefault(),
+                        "Results: %d accepted, %d not accepted, %d unknown, %d skipped\n\n%s",
+                        accepted, rejected, unknown, skipped, results);
+                postUi(() -> {
                     dialog.setMessage(summary);
                     dialog.setCancelable(true);
                     dialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
@@ -489,15 +479,15 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         private byte[] loadAsset(String filename) throws IOException {
-            InputStream is = requireContext().getAssets().open(filename);
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            byte[] chunk = new byte[8192];
-            int len;
-            while ((len = is.read(chunk)) != -1) {
-                buffer.write(chunk, 0, len);
+            try (InputStream is = appContext.getAssets().open(filename)) {
+                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                byte[] chunk = new byte[8192];
+                int len;
+                while ((len = is.read(chunk)) != -1) {
+                    buffer.write(chunk, 0, len);
+                }
+                return buffer.toByteArray();
             }
-            is.close();
-            return buffer.toByteArray();
         }
     }
 }
